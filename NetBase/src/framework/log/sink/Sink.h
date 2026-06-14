@@ -3,8 +3,6 @@
 
 #include <string>
 
-#include "NetBaseAPI.h"
-
 #include "../entry/Entry.h"
 
 /*
@@ -17,7 +15,7 @@
 *	Flush: Pure virtual function, should immediately flush the buffer and write
 *	GetName: Pure virtual function, get the name of the sink, can be set to anything
 */
-class NETBASE_API Sink
+class Sink
 {
 public:
 	Sink() = default;

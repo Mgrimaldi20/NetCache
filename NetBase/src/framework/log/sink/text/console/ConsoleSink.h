@@ -1,10 +1,6 @@
 #ifndef __NETBASE_FRAMEWORK_LOG_SINK_TEXT_CONSOLE_CONSOLESINK_H__
 #define __NETBASE_FRAMEWORK_LOG_SINK_TEXT_CONSOLE_CONSOLESINK_H__
 
-#include "NetBaseAPI.h"
-
-#include "../../../../PImplPtr.h"
-
 #include "../TextSink.h"
 
 /*
@@ -16,11 +12,11 @@
 *	GetName: Gets the name of the stdout Sink
 *	SetFormatter: Sets the internal formatter to a newly defined one
 */
-class NETBASE_API ConsoleSink : public TextSink
+class ConsoleSink : public TextSink
 {
 public:
 	ConsoleSink(std::unique_ptr<TextFormatter> formatter = {});
-	virtual ~ConsoleSink();
+	virtual ~ConsoleSink() = default;
 
 	void Write(const Entry &entry) override final;
 	void Flush() override final;
@@ -30,8 +26,8 @@ public:
 	void SetFormatter(std::unique_ptr<TextFormatter> fmtter) override final;
 
 private:
-	struct Impl;
-	PImplPtr<Impl> pimpl;
+	std::string sinkname;
+	std::unique_ptr<TextFormatter> formatter;
 };
 
 #endif

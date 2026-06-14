@@ -1,8 +1,6 @@
 #ifndef __NETBASE_FRAMEWORK_LOG_FORMATTER_TEXT_BASIC_BASICTEXTFORMATTER_H__
 #define __NETBASE_FRAMEWORK_LOG_FORMATTER_TEXT_BASIC_BASICTEXTFORMATTER_H__
 
-#include "NetBaseAPI.h"
-
 #include "../TextFormatter.h"
 
 /*
@@ -12,7 +10,7 @@
 *
 *	Format: Turns a log entry into a formatted string
 */
-class NETBASE_API BasicTextFormatter : public TextFormatter
+class BasicTextFormatter : public TextFormatter
 {
 public:
 	BasicTextFormatter() = default;

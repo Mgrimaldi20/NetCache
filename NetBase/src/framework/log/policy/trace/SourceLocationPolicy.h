@@ -1,10 +1,6 @@
 #ifndef __NETBASE_FRAMEWORK_LOG_POLICY_TRACE_SOURCELOCATIONPOLICY_H__
 #define __NETBASE_FRAMEWORK_LOG_POLICY_TRACE_SOURCELOCATIONPOLICY_H__
 
-#include "NetBaseAPI.h"
-
-#include "../../../PImplPtr.h"
-
 #include "../../entry/Entry.h"
 
 #include "../Policy.h"
@@ -16,7 +12,7 @@
 *	Transform: Gets the current source location if applicable and returns true if further steps are needed
 *	GetName: Returns the name of the policy
 */
-class NETBASE_API SourceLocationPolicy : public Policy
+class SourceLocationPolicy : public Policy
 {
 public:
 	SourceLocationPolicy(Entry::Level level);
@@ -26,8 +22,7 @@ public:
 	std::string &GetName() override final;
 
 private:
-	struct Impl;
-	PImplPtr<Impl> pimpl;
+	std::string policyname;
 
 	Entry::Level level;
 };

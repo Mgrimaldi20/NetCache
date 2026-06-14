@@ -3,8 +3,6 @@
 
 #include <string>
 
-#include "NetBaseAPI.h"
-
 #include "../entry/Entry.h"
 
 /*
@@ -16,7 +14,7 @@
 *	Transform: Pure virtual function, checks if this policy is applicable, applies the policy
 *	GetName: Pure virtual function, get the name of the policy, can be set to anything
 */
-class NETBASE_API Policy
+class Policy
 {
 public:
 	Policy() = default;

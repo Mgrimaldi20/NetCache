@@ -3,8 +3,6 @@
 
 #include <string>
 
-#include "NetBaseAPI.h"
-
 #include "../../entry/Entry.h"
 
 /*
@@ -14,7 +12,7 @@
 * 
 *	Format: Pure virtual function, designed to turn an entry into a formatted string
 */
-class NETBASE_API TextFormatter
+class TextFormatter
 {
 public:
 	TextFormatter() = default;

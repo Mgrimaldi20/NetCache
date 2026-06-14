@@ -2,10 +2,7 @@
 #define __NETBASE_FRAMEWORK_LOG_SINK_TEXT_FILE_FILESINK_H__
 
 #include <filesystem>
-
-#include "NetBaseAPI.h"
-
-#include "../../../../PImplPtr.h"
+#include <fstream>
 
 #include "../TextSink.h"
 
@@ -19,7 +16,7 @@
 *	GetName: Gets the name of the file Sink, will be the name of the file
 *	SetFormatter: Sets the internal formatter to a newly defined one
 */
-class NETBASE_API FileSink : public TextSink
+class FileSink : public TextSink
 {
 public:
 	FileSink(const std::filesystem::path &fullpath, std::unique_ptr<TextFormatter> formatter = {});
@@ -33,8 +30,10 @@ public:
 	void SetFormatter(std::unique_ptr<TextFormatter> fmtter) override final;
 
 private:
-	struct Impl;
-	PImplPtr<Impl> pimpl;
+	std::ofstream logfile;
+
+	std::string sinkname;
+	std::unique_ptr<TextFormatter> formatter;
 };
 
 #endif
