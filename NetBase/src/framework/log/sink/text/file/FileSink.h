@@ -20,7 +20,7 @@ class FileSink : public TextSink
 {
 public:
 	FileSink(const std::filesystem::path &fullpath, std::unique_ptr<TextFormatter> formatter = {});
-	virtual ~FileSink();
+	virtual ~FileSink() = default;
 
 	void Write(const Entry &entry) override final;
 	void Flush() override final;

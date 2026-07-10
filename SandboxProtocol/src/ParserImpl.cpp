@@ -5,16 +5,18 @@
 
 #include "ParserImpl.h"
 
-ClientAPI::Parser::ParsedCmd ParserImpl::Parse(std::string_view data)
+ClientAPI::Parser::ParsedCmd ParserImpl::Parse(const char *data, std::size_t length)
 {
 	// just something silly to stop the warnings... do whatever you need to here
-	if (data.empty())
+	std::string_view datasv(data, length);
+
+	if (datasv.empty())
 		throw std::runtime_error("Command is empty");
 
-	while (!data.empty() && (data.back() == '\n' || data.back() == '\r'))
-		data.remove_suffix(1);
+	while (!datasv.empty() && (datasv.back() == '\n' || datasv.back() == '\r'))
+		datasv.remove_suffix(1);
 
-	if (data.empty())
+	if (datasv.empty())
 		throw std::runtime_error("Command contains only newlines");
 
 	Parser::ParsedCmd cmd =
@@ -24,23 +26,24 @@ ClientAPI::Parser::ParsedCmd ParserImpl::Parse(std::string_view data)
 	};
 
 	std::from_chars_result result = std::from_chars(
-		data.data(),
-		data.data() + data.size(),
+		datasv.data(),
+		datasv.data() + datasv.size(),
 		cmd.cmdid
 	);
 
 	if (result.ec != std::errc())
-		throw std::runtime_error(std::format("Could not parse command :: {}", data));
+		throw std::runtime_error(std::format("Could not parse command :: {}", datasv));
 
-	std::size_t parsed = result.ptr - data.data();
-	if (parsed < data.size())
+	std::size_t parsed = result.ptr - datasv.data();
+	if (parsed < datasv.size())
 	{
-		std::string_view payload = data.substr(parsed);
+		std::string_view payload = datasv.substr(parsed);
 
 		if (!payload.empty() && payload.front() == ' ')
 			payload.remove_prefix(1);
 
-		cmd.data = payload;
+		cmd.data = payload.data();
+		cmd.length = payload.size();
 	}
 
 	return cmd;

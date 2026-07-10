@@ -6,8 +6,6 @@ StacktracePolicy::StacktracePolicy(Entry::Level level)
 {
 }
 
-StacktracePolicy::~StacktracePolicy() = default;
-
 bool StacktracePolicy::Transform(Entry &entry)
 {
 	if (entry.entrylevel != level)

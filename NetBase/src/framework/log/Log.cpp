@@ -39,14 +39,10 @@ Log::~Log()
 
 EntryBuilder &Log::Debug(std::string msg, std::source_location loc)
 {
-#if defined(NETBASE_DEBUG)
 	return EntryBuilderImpl(pimpl->driver, loc)
 		.Name(pimpl->logname)
 		.Level(Entry::Level::Debug)
 		.Message(msg);
-#else
-	return {};
-#endif
 }
 
 EntryBuilder &Log::Info(std::string msg, std::source_location loc)

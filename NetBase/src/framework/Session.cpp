@@ -83,7 +83,7 @@ asio::awaitable<void> Session::Reader()
 
 			message.resize(n);
 
-			ClientAPI::Parser::ParsedCmd parsedcmd = parser.get().Parse(message);
+			ClientAPI::Parser::ParsedCmd parsedcmd = parser.get().Parse(message.c_str(), message.size());
 			dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
 		}
 	}

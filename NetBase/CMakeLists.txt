@@ -80,6 +80,8 @@ target_sources(NetBase PRIVATE
 	"src/framework/log/formatter/text/basic/BasicTextFormatter.h"
 	"src/framework/log/formatter/text/basic/BasicTextFormatter.cpp"
 	"src/framework/log/policy/Policy.h"
+	"src/framework/log/policy/level/LevelPolicy.h"
+	"src/framework/log/policy/level/LevelPolicy.cpp"
 	"src/framework/log/policy/trace/StacktracePolicy.h"
 	"src/framework/log/policy/trace/StacktracePolicy.cpp"
 	"src/framework/log/policy/trace/SourceLocationPolicy.h"

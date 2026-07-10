@@ -6,8 +6,6 @@ SourceLocationPolicy::SourceLocationPolicy(Entry::Level level)
 {
 }
 
-SourceLocationPolicy::~SourceLocationPolicy() = default;
-
 bool SourceLocationPolicy::Transform(Entry &entry)
 {
 	if (entry.entrylevel == level)

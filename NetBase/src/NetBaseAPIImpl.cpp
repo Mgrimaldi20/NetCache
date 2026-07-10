@@ -11,17 +11,17 @@ NetBaseAPIImpl::NetBaseAPIImpl(
 {
 }
 
-CmdDispatcher &NetBaseAPIImpl::GetCmdDispatcher()
+CmdDispatcher *NetBaseAPIImpl::GetCmdDispatcher()
 {
-	return *dispatcher;
+	return dispatcher.get();
 }
 
-ChannelManager &NetBaseAPIImpl::GetChannelManager()
+ChannelManager *NetBaseAPIImpl::GetChannelManager()
 {
-	return *chmanager;
+	return chmanager.get();
 }
 
-Log &NetBaseAPIImpl::GetLogger()
+Log *NetBaseAPIImpl::GetLogger()
 {
-	return *log;
+	return log.get();
 }

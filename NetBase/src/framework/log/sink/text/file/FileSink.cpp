@@ -19,8 +19,6 @@ FileSink::FileSink(const std::filesystem::path &fullpath, std::unique_ptr<TextFo
 	logfile.open(fullpath.string());
 }
 
-FileSink::~FileSink() = default;
-
 void FileSink::Write(const Entry &entry)
 {
 	if (formatter)

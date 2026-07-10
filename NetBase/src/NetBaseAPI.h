@@ -1,10 +1,8 @@
 #ifndef __NETBASE_NETBASEAPI_H__
 #define __NETBASE_NETBASEAPI_H__
 
+// safe over boundaries, just a stdint.h wrapper, no name mangling on types
 #include <cstdint>
-#include <memory>
-#include <string>
-#include <string_view>
 
 #if defined(NETBASE_WIN32)
 #define EXPORT __declspec(dllexport)
@@ -43,9 +41,9 @@ public:
 	NetBaseAPI() = default;
 	virtual ~NetBaseAPI() = default;
 
-	virtual CmdDispatcher &GetCmdDispatcher() = 0;
-	virtual ChannelManager &GetChannelManager() = 0;
-	virtual Log &GetLogger() = 0;
+	virtual CmdDispatcher *GetCmdDispatcher() = 0;
+	virtual ChannelManager *GetChannelManager() = 0;
+	virtual Log *GetLogger() = 0;
 };
 
 /*
@@ -69,21 +67,22 @@ public:
 		struct ParsedCmd
 		{
 			std::uint_least16_t cmdid;
-			std::string_view data;
+			const char *data;
+			std::size_t length;
 		};
 
 		Parser() = default;
 		virtual ~Parser() = default;
 
-		virtual ClientAPI::Parser::ParsedCmd Parse(std::string_view data) = 0;
+		virtual ClientAPI::Parser::ParsedCmd Parse(const char *data, std::size_t length) = 0;
 	};
 
 	ClientAPI() = default;
 	virtual ~ClientAPI() = default;
 
 	virtual void RegisterCmds() = 0;
-	virtual ClientAPI::Parser &GetParser() = 0;
-	virtual std::string &GetProtocolName() = 0;
+	virtual ClientAPI::Parser *GetParser() = 0;
+	virtual const char *GetProtocolName() = 0;
 };
 
 #endif

@@ -24,9 +24,9 @@ public:
 
 	virtual ~NetBaseAPIImpl() = default;
 
-	CmdDispatcher &GetCmdDispatcher() override final;
-	ChannelManager &GetChannelManager() override final;
-	Log &GetLogger() override final;
+	CmdDispatcher *GetCmdDispatcher() override final;
+	ChannelManager *GetChannelManager() override final;
+	Log *GetLogger() override final;
 
 private:
 	std::shared_ptr<CmdDispatcher> dispatcher;

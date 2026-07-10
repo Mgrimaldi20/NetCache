@@ -16,7 +16,7 @@ class SourceLocationPolicy : public Policy
 {
 public:
 	SourceLocationPolicy(Entry::Level level);
-	virtual ~SourceLocationPolicy();
+	virtual ~SourceLocationPolicy() = default;
 
 	bool Transform(Entry &entry) override final;
 	std::string &GetName() override final;

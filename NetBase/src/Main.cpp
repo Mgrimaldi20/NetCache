@@ -24,6 +24,7 @@
 #include "framework/log/sink/text/console/ConsoleSink.h"
 #include "framework/log/sink/text/file/FileSink.h"
 #include "framework/log/formatter/text/basic/BasicTextFormatter.h"
+#include "framework/log/policy/level/LevelPolicy.h"
 #include "framework/log/policy/trace/StacktracePolicy.h"
 #include "framework/log/policy/trace/SourceLocationPolicy.h"
 
@@ -51,6 +52,7 @@ int main(int argc, char **argv)
 				},
 				std::vector<std::shared_ptr<Policy>>
 				{
+					std::make_shared<LevelPolicy>(Entry::Level::Debug),
 					std::make_shared<StacktracePolicy>(Entry::Level::Fatal),
 					std::make_shared<SourceLocationPolicy>(Entry::Level::Debug)
 				}
@@ -82,7 +84,7 @@ int main(int argc, char **argv)
 
 		ClientAPI *clientapi = GetClientAPI(netbaseapi.get());
 
-		ClientAPI::Parser &parser = clientapi->GetParser();
+		ClientAPI::Parser *parser = clientapi->GetParser();
 
 		clientapi->RegisterCmds();
 		log->Info("Registered protocol commands in the CmdSystem");
@@ -94,7 +96,7 @@ int main(int argc, char **argv)
 		// single thread hint
 		asio::io_context ioctx(1);
 
-		Server server(ioctx, serverport, log, dispatcher, parser);
+		Server server(ioctx, serverport, log, dispatcher, *parser);
 
 		ioctx.run();
 

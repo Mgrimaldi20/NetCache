@@ -1,5 +1,11 @@
 #include <system_error>
 
+#include "../../NetBase/src/framework/CmdDispatcher.h"
+#include "../../NetBase/src/framework/ChannelManager.h"
+#include "../../NetBase/src/framework/Channel.h"
+
+#include "../../NetBase/src/framework/log/Log.h"
+
 #include "ParserImpl.h"
 
 #include "ClientAPIImpl.h"
@@ -15,25 +21,25 @@ ClientAPIImpl::ClientAPIImpl(NetBaseAPI *netbaseapi, std::string protoname)
 
 void ClientAPIImpl::RegisterCmds()
 {
-	CmdDispatcher &dispatcher = netbaseapi->GetCmdDispatcher();
-	ChannelManager &chmanager = netbaseapi->GetChannelManager();
+	CmdDispatcher *dispatcher = netbaseapi->GetCmdDispatcher();
+	ChannelManager *chmanager = netbaseapi->GetChannelManager();
 
-	dispatcher.Register(
+	dispatcher->Register(
 		0,
 		[this, &chmanager](std::weak_ptr<Client> client, const ClientAPI::Parser::ParsedCmd &cmd)
 		{
 			std::string channelname = std::string(cmd.data);
-			std::shared_ptr<Channel> channel = chmanager.Create(channelname);
+			std::shared_ptr<Channel> channel = chmanager->Create(channelname);
 			channel->Join(client.lock());
 		}
 	);
 
-	dispatcher.Register(
+	dispatcher->Register(
 		1,
 		[this, &chmanager](std::weak_ptr<Client> client, const ClientAPI::Parser::ParsedCmd &cmd)
 		{
 			std::string channelname = std::string(cmd.data);
-			std::shared_ptr<Channel> channel = chmanager.Fetch(channelname);
+			std::shared_ptr<Channel> channel = chmanager->Fetch(channelname);
 			channel->Broadcast("Hello\n");
 
 			client.lock()->Send("Response Message\n");
@@ -41,12 +47,12 @@ void ClientAPIImpl::RegisterCmds()
 	);
 }
 
-ClientAPI::Parser &ClientAPIImpl::GetParser()
+ClientAPI::Parser *ClientAPIImpl::GetParser()
 {
-	return *parser;
+	return parser.get();
 }
 
-std::string &ClientAPIImpl::GetProtocolName()
+const char *ClientAPIImpl::GetProtocolName()
 {
-	return protoname;
+	return protoname.c_str();
 }

@@ -16,7 +16,7 @@ class StacktracePolicy : public Policy
 {
 public:
 	StacktracePolicy(Entry::Level level);
-	virtual ~StacktracePolicy();
+	virtual ~StacktracePolicy() = default;
 
 	bool Transform(Entry &entry) override final;
 	std::string &GetName() override final;
