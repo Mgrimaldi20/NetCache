@@ -8,10 +8,7 @@
 #include <initializer_list>
 #include <utility>
 
-#include "NetBaseAPI.h"
-
 #include "Client.h"
-#include "PImplPtr.h"
 
 #include "log/Log.h"
 
@@ -25,7 +22,7 @@
 *	Register: Registers a command handler within the system by its id
 *	Dispatch: Calls the registered handlers by id using the client as context
 */
-class NETBASE_API CmdDispatcher
+class CmdDispatcher
 {
 public:
 	using CmdHandlerFn = std::function<void(std::weak_ptr<Client>, const ClientAPI::Parser::ParsedCmd &)>;

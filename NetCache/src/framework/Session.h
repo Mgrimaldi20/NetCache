@@ -7,8 +7,6 @@
 #include <string_view>
 #include <functional>
 
-#include "NetBaseAPI.h"
-
 #include "Asio.h"
 #include "Channel.h"
 #include "CmdDispatcher.h"

@@ -4,8 +4,6 @@
 #include <memory>
 #include <functional>
 
-#include "NetBaseAPI.h"
-
 #include "Asio.h"
 #include "CmdDispatcher.h"
 

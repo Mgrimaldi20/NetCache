@@ -44,7 +44,7 @@ endif()
 target_sources(NetCache PRIVATE
 	"src/Main.cpp"
 	"src/sys/DynamicLibrary.h"
-	"src/framework/PImplPtr.h"
+	
 	"src/framework/Asio.h"
 	"src/framework/Asio.cpp"
 	"src/framework/Server.h"

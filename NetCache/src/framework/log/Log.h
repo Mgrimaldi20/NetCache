@@ -9,10 +9,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "NetBaseAPI.h"
-
-#include "../PImplPtr.h"
-
 #include "entry/Entry.h"
 #include "entry/EntryBuilder.h"
 #include "driver/Driver.h"
@@ -28,7 +24,7 @@
 *	Warn: Log a formatted warning message, designed for recoverable issues or abnormal state
 *	Error: Log a formatted error message, designed for unrecoverable code errors, program should quit
 */
-class NETBASE_API Log
+class Log
 {
 public:
 	template<typename ...Args>

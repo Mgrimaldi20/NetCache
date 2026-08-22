@@ -5,10 +5,7 @@
 #include <memory>
 #include <vector>
 
-#include "NetBaseAPI.h"
-
 #include "Channel.h"
-#include "PImplPtr.h"
 
 #include "log/Log.h"
 
@@ -22,7 +19,7 @@
 *	Exists: Check if a channel with the specified name exists
 *	Destroy: Deletes a channel if it exists and kicks out all connected clients
 */
-class NETBASE_API ChannelManager
+class ChannelManager
 {
 public:
 	ChannelManager(std::shared_ptr<Log> log);

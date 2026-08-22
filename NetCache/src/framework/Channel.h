@@ -4,10 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "NetBaseAPI.h"
-
 #include "Client.h"
-#include "PImplPtr.h"
 
 #include "log/Log.h"
 
@@ -21,7 +18,7 @@
 *	Leave: Remove a client from a channel
 *	Broadcast: Send a message to all clients connected to the channel
 */
-class NETBASE_API Channel
+class Channel
 {
 public:
 	Channel(std::string channelname, std::shared_ptr<Log> log);
