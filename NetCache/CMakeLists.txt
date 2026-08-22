@@ -1,51 +1,47 @@
-﻿# CMakeList.txt : CMake project for NetBase, include source and define
+﻿# CMakeList.txt : CMake project for NetCache, include source and define
 # project specific logic here.
 #
 
 cmake_minimum_required(VERSION 3.25)
 
 # Add source to this project's executable
-add_executable(NetBase)
+add_executable(NetCache)
 
-project(NetBase LANGUAGES CXX)
+project(NetCache LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
-set_property(TARGET NetBase PROPERTY CXX_STANDARD 23)
+set_property(TARGET NetCache PROPERTY CXX_STANDARD 23)
 
-# Set the NetBase version
-target_compile_definitions(NetBase PRIVATE NETBASE_VERSION=1)
-target_compile_definitions(NetBase PRIVATE NETBASE_EXPORTS)
+# Set the NetCache version
+target_compile_definitions(NetCache PRIVATE NETCACHE_VERSION=1)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	target_compile_definitions(NetBase PRIVATE NETBASE_DEBUG)
+	target_compile_definitions(NetCache PRIVATE NETCACHE_DEBUG)
 endif()
 
 if(WIN32)
-	target_compile_definitions(NetBase PRIVATE UNICODE _UNICODE)
-	target_compile_definitions(NetBase PRIVATE _WIN32_WINNT=0x0601)
+	target_compile_definitions(NetCache PRIVATE UNICODE _UNICODE)
+	target_compile_definitions(NetCache PRIVATE _WIN32_WINNT=0x0601)
 endif()
 
 if(MSVC)
-	target_compile_definitions(NetBase PRIVATE NETBASE_MSVC)
+	target_compile_definitions(NetCache PRIVATE NETCACHE_MSVC)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	target_compile_definitions(NetBase PRIVATE NETBASE_CLANG)
+	target_compile_definitions(NetCache PRIVATE NETCACHE_CLANG)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	target_compile_definitions(NetBase PRIVATE NETBASE_GCC)
+	target_compile_definitions(NetCache PRIVATE NETCACHE_GCC)
 endif()
 
 if (WIN32)
-	target_compile_definitions(NetBase PRIVATE NETBASE_WIN32)
+	target_compile_definitions(NetCache PRIVATE NETCACHE_WIN32)
 elseif (APPLE)
-	target_compile_definitions(NetBase PRIVATE NETBASE_APPLE)
+	target_compile_definitions(NetCache PRIVATE NETCACHE_APPLE)
 elseif (UNIX)
-	target_compile_definitions(NetBase PRIVATE NETBASE_LINUX)
+	target_compile_definitions(NetCache PRIVATE NETCACHE_LINUX)
 endif()
 
-# Specify the common OS independent source files for the NetBase project
-target_sources(NetBase PRIVATE
-	"src/NetBaseAPI.h"
-	"src/NetBaseAPIImpl.h"
-	"src/NetBaseAPIImpl.cpp"
+# Specify the common OS independent source files for the NetCache project
+target_sources(NetCache PRIVATE
 	"src/Main.cpp"
 	"src/sys/DynamicLibrary.h"
 	"src/framework/PImplPtr.h"
@@ -90,27 +86,27 @@ target_sources(NetBase PRIVATE
 
 # Include different source code depending on OS
 if(WIN32)
-	target_sources(NetBase PRIVATE
+	target_sources(NetCache PRIVATE
 		"src/sys/win32/WinDynamicLibrary.h"
 		"src/sys/win32/WinDynamicLibrary.cpp"
 	)
 elseif(LINUX OR APPLE)
-	target_sources(NetBase PRIVATE
+	target_sources(NetCache PRIVATE
 		"src/sys/posix/PosixDynamicLibrary.h"
 		"src/sys/posix/PosixDynamicLibrary.cpp"
 	)
 endif()
 
 #if(LINUX)
-#	target_sources(NetBase PRIVATE
+#	target_sources(NetCache PRIVATE
 #	)
 #elseif(APPLE)
-#	target_sources(NetBase PRIVATE
+#	target_sources(NetCache PRIVATE
 #	)
 #endif()
 
 message(STATUS "The full source include path is ${CMAKE_CURRENT_SOURCE_DIR}/src")
-target_include_directories(NetBase PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+target_include_directories(NetCache PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 # Add the ASIO library as an interface target
 add_library(asio INTERFACE)
@@ -125,21 +121,21 @@ elseif(UNIX)
 	target_compile_definitions(asio INTERFACE ASIO_HAS_IO_URING)
 endif()
 
-target_link_libraries(NetBase PRIVATE asio)
+target_link_libraries(NetCache PRIVATE asio)
 
-set_target_properties(NetBase PROPERTIES COMPILE_WARNING_AS_ERROR ON)
+set_target_properties(NetCache PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
 # Set up all the compiler options here
 # MSVC compiler options
 if(MSVC)
-	target_compile_options(NetBase PRIVATE
+	target_compile_options(NetCache PRIVATE
 		"/external:W0"
 		"/external:anglebrackets"
 		"/analyze:external-"
 	)
 
 	# Common options for all build types
-	target_compile_options(NetBase PRIVATE
+	target_compile_options(NetCache PRIVATE
 		"/W4"
 		"/WX"
 		"/permissive-"
@@ -152,7 +148,7 @@ if(MSVC)
 
 	# Debug build compiler options
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		target_compile_options(NetBase PRIVATE
+		target_compile_options(NetCache PRIVATE
 			"/Zi"
 			"/fsanitize=address"
 			"/Od"
@@ -161,11 +157,11 @@ if(MSVC)
 		)
 
 		# Ensure PDB file is generated (Win32)
-		target_link_options(NetBase PRIVATE "/DEBUG")
+		target_link_options(NetCache PRIVATE "/DEBUG")
 
 	# Release build compiler options
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-		target_compile_options(NetBase PRIVATE
+		target_compile_options(NetCache PRIVATE
 			"/O2"
 			"/MD"
 			"/GL"
@@ -178,7 +174,7 @@ if(MSVC)
 # CLANG and GCC compiler options
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	# Common options for all build types
-	target_compile_options(NetBase PRIVATE
+	target_compile_options(NetCache PRIVATE
 		"-Wall"
 		"-Werror"
 		"-Wpedantic"
@@ -190,7 +186,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 
 	# Debug build compiler options
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		target_compile_options(NetBase PRIVATE
+		target_compile_options(NetCache PRIVATE
 			"-fsanitize=address"
 			"-fsanitize=leak"
 			"-fsanitize=undefined"
@@ -198,7 +194,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 			"-O0"
 		)
 
-		target_link_options(NetBase PRIVATE
+		target_link_options(NetCache PRIVATE
 			"-fsanitize=address"
 			"-fsanitize=leak"
 			"-fsanitize=undefined"
@@ -207,7 +203,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 
 	# Release build compiler options
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-		target_compile_options(NetBase PRIVATE
+		target_compile_options(NetCache PRIVATE
 			"-O3"
 			"-flto"
 		)
