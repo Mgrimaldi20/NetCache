@@ -71,8 +71,8 @@ public:
 	EntryBuilder &Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 private:
-	struct Impl;
-	PImplPtr<Impl> pimpl;
+	std::string logname;
+	std::shared_ptr<Driver> driver;
 };
 
 template<typename ...Args>

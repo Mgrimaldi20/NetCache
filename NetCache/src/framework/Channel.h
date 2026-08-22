@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <unordered_set>
 
 #include "Client.h"
 
@@ -30,8 +31,10 @@ public:
 	void Broadcast(std::string message);
 
 private:
-	struct Impl;
-	PImplPtr<Impl> pimpl;
+	std::unordered_set<std::shared_ptr<Client>> clients;
+
+	std::string channelname;
+	std::shared_ptr<Log> log;
 };
 
 #endif

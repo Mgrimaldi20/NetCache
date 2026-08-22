@@ -43,8 +43,6 @@ endif()
 # Specify the common OS independent source files for the NetCache project
 target_sources(NetCache PRIVATE
 	"src/Main.cpp"
-	"src/sys/DynamicLibrary.h"
-	
 	"src/framework/Asio.h"
 	"src/framework/Asio.cpp"
 	"src/framework/Server.h"
@@ -83,27 +81,6 @@ target_sources(NetCache PRIVATE
 	"src/framework/log/policy/trace/SourceLocationPolicy.h"
 	"src/framework/log/policy/trace/SourceLocationPolicy.cpp"
 )
-
-# Include different source code depending on OS
-if(WIN32)
-	target_sources(NetCache PRIVATE
-		"src/sys/win32/WinDynamicLibrary.h"
-		"src/sys/win32/WinDynamicLibrary.cpp"
-	)
-elseif(LINUX OR APPLE)
-	target_sources(NetCache PRIVATE
-		"src/sys/posix/PosixDynamicLibrary.h"
-		"src/sys/posix/PosixDynamicLibrary.cpp"
-	)
-endif()
-
-#if(LINUX)
-#	target_sources(NetCache PRIVATE
-#	)
-#elseif(APPLE)
-#	target_sources(NetCache PRIVATE
-#	)
-#endif()
 
 message(STATUS "The full source include path is ${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_include_directories(NetCache PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")

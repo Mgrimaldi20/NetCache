@@ -24,7 +24,7 @@ Server::Server(
 	asio::co_spawn(ioctx, Listener(port, dispatcher, parser), asio::detached);
 
 	log->Info("Server started");
-	log->Info("NetBase server running on port: {}", port);
+	log->Info("NetCache server running on port: {}", port);
 	log->Info("Press Ctrl-C to exit...");
 }
 

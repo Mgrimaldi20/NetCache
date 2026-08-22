@@ -2,55 +2,41 @@
 #include <iterator>
 #include <utility>
 #include <exception>
-#include <unordered_map>
 
 #include "ChannelManager.h"
 
-struct ChannelManager::Impl
-{
-	Impl(std::shared_ptr<Log> log)
-		: channels(),
-		log(log)
-	{}
-
-	~Impl() = default;
-
-	std::unordered_map<std::string, std::shared_ptr<Channel>> channels;
-
-	std::shared_ptr<Log> log;
-};
-
 ChannelManager::ChannelManager(std::shared_ptr<Log> log)
-	: pimpl(PImplPtr<ChannelManager::Impl>::MakePImpl(log))
+	: channels(),
+	log(log)
 {
-	pimpl->log->Info("Channel Manager started");
+	log->Info("Channel Manager started");
 }
 
 ChannelManager::~ChannelManager()
 {
-	pimpl->log->Info("Shutting down the Channel Manager");
+	log->Info("Shutting down the Channel Manager");
 }
 
 std::shared_ptr<Channel> ChannelManager::Create(std::string channelname)
 {
-	auto [it, inserted] = pimpl->channels.try_emplace(
+	auto [it, inserted] = channels.try_emplace(
 		channelname,
 		std::make_shared<Channel>(
 			channelname,
-			pimpl->log
+			log
 		)
 	);
 
 	if (!inserted)
-		pimpl->log->Warn("Failed to create Channel, already exists, fetching existing Channel: {}", channelname);
+		log->Warn("Failed to create Channel, already exists, fetching existing Channel: {}", channelname);
 
 	return it->second;
 }
 
 std::shared_ptr<Channel> ChannelManager::Fetch(std::string channelname)
 {
-	auto it = pimpl->channels.find(channelname);
-	if (it != pimpl->channels.end())
+	auto it = channels.find(channelname);
+	if (it != channels.end())
 		return it->second;
 
 	return nullptr;
@@ -59,7 +45,7 @@ std::shared_ptr<Channel> ChannelManager::Fetch(std::string channelname)
 std::vector<std::shared_ptr<Channel>> ChannelManager::FetchAll()
 {
 	std::vector<std::shared_ptr<Channel>> elements;
-	elements.reserve(pimpl->channels.size());
+	elements.reserve(channels.size());
 
 	auto Transformer = [](const std::pair<const std::string, std::shared_ptr<Channel>> &pair)
 	{
@@ -67,8 +53,8 @@ std::vector<std::shared_ptr<Channel>> ChannelManager::FetchAll()
 	};
 
 	std::transform(
-		pimpl->channels.begin(),
-		pimpl->channels.end(),
+		channels.begin(),
+		channels.end(),
 		std::back_inserter(elements),
 		Transformer
 	);
@@ -78,7 +64,7 @@ std::vector<std::shared_ptr<Channel>> ChannelManager::FetchAll()
 
 bool ChannelManager::Exists(std::string channelname)
 {
-	return pimpl->channels.contains(channelname);
+	return channels.contains(channelname);
 }
 
 void ChannelManager::Destroy(std::string channelname)
@@ -86,5 +72,5 @@ void ChannelManager::Destroy(std::string channelname)
 	if (!Exists(channelname))
 		return;
 
-	pimpl->channels.erase(channelname);
+	channels.erase(channelname);
 }

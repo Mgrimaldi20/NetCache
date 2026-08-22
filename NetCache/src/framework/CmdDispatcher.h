@@ -7,6 +7,7 @@
 #include <string_view>
 #include <initializer_list>
 #include <utility>
+#include <unordered_map>
 
 #include "Client.h"
 
@@ -36,8 +37,9 @@ public:
 	void Dispatch(std::weak_ptr<Client> client, ClientAPI::Parser::ParsedCmd parsedcmd);
 
 private:
-	struct Impl;
-	PImplPtr<Impl> pimpl;
+	std::unordered_map<std::uint_least16_t, CmdHandlerFn> handlers;
+
+	std::shared_ptr<Log> log;
 };
 
 #endif

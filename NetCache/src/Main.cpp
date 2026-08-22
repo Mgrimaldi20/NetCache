@@ -5,13 +5,7 @@
 #include <system_error>
 #include <memory>
 #include <exception>
-#include <filesystem>
 #include <vector>
-
-#include "NetBaseAPI.h"
-#include "NetBaseAPIImpl.h"
-
-#include "sys/DynamicLibrary.h"
 
 #include "framework/Asio.h"
 #include "framework/Server.h"
@@ -31,7 +25,6 @@
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
 static asio::ip::port_type serverport = NET_DEFAULT_PORT;
-static std::filesystem::path dylibpath;
 
 static bool ValidateOptions(int argc, char **argv);
 
@@ -59,37 +52,13 @@ int main(int argc, char **argv)
 			)
 		);
 
-		std::unique_ptr<DynamicLibrary> dylib = DynamicLibrary::CreateDynamicLibrary(dylibpath);
-		log->Info("Loaded plugin library: {}", dylibpath.filename().string());
-
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 		std::shared_ptr<ChannelManager> chmanager = std::make_shared<ChannelManager>(log);
 
-		std::any func = dylib->GetSymbol("GetClientAPI");
-
-		if (func.type() != typeid(void *))
-			throw std::runtime_error("Failed to get GetClientAPI function, expected type: void *");
-
-		// to be implemented by the client protocol library
-		using GetClientAPIFn = ClientAPI *(*)(NetBaseAPI *);
-
-		GetClientAPIFn GetClientAPI = reinterpret_cast<GetClientAPIFn>(std::any_cast<void *>(func));
-
-		// create the NetBaseAPI impl to send to the protocol library
-		std::shared_ptr<NetBaseAPIImpl> netbaseapi = std::make_shared<NetBaseAPIImpl>(
-			dispatcher,
-			chmanager,
-			log
-		);
-
-		ClientAPI *clientapi = GetClientAPI(netbaseapi.get());
-
-		ClientAPI::Parser *parser = clientapi->GetParser();
-
-		clientapi->RegisterCmds();
+		// TODO: Register commands here within the system
 		log->Info("Registered protocol commands in the CmdSystem");
 
-		log->Info("Started protocol: {}", clientapi->GetProtocolName());
+		log->Info("Started NetCache");
 
 		// put here because if the dylib is unloaded first, it causes a segfault
 		// need to fix and make more robust as its a big problem
@@ -100,7 +69,7 @@ int main(int argc, char **argv)
 
 		ioctx.run();
 
-		log->Info("NetBase server is exiting...");
+		log->Info("NetCache server is exiting...");
 	}
 
 	catch (const std::exception &e)
@@ -148,36 +117,11 @@ bool ValidateOptions(int argc, char **argv)
 				break;
 			}
 
-			case 'd':
-			{
-				std::string_view fullpath(argv[i] + 2);
-
-				if (fullpath.empty() || fullpath[0] != ':')
-				{
-					std::println("Invalid dynamic library path command line format: {}", argv[i]);
-					return false;
-				}
-
-				std::filesystem::path path(fullpath.substr(1));
-				if (!path.has_filename() || !path.has_extension())
-				{
-					std::println("Invalid dynamic library file path: {}", path.string());
-					return false;
-				}
-
-				dylibpath = std::filesystem::canonical(path);
-
-				std::println("Plugin to load (canonical path): {}", dylibpath.string());
-
-				break;
-			}
-
 			case '?':
 				std::println("\nUsage:\n");
-				std::println("NetBase [-p:<port>] [-d:<dylib fullpath>] [-?]");
+				std::println("NetCache [-p:<port>] [-?]");
 				std::println("------------------------------------------------------------");
 				std::println("-p:<port>              Specify the port number of the server");
-				std::println("-d:<dylib fullpath>    Specify the full path of the protocol");
 				std::println("-?                     Prints out this help message and exit");
 
 				return false;

@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 #include "Channel.h"
 
@@ -35,8 +36,9 @@ public:
 	void Destroy(std::string channelname);
 
 private:
-	struct Impl;
-	PImplPtr<Impl> pimpl;
+	std::unordered_map<std::string, std::shared_ptr<Channel>> channels;
+
+	std::shared_ptr<Log> log;
 };
 
 #endif
