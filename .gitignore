@@ -40,9 +40,10 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Oo]ut/
+[Ll]og/
 [Ll]ogs/
 
-!NetBase/src/framework/log/
+!NetCache/src/framework/log/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
