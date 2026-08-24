@@ -1,5 +1,5 @@
-#ifndef __NETBASE_FRAMEWORK_SERVER_H__
-#define __NETBASE_FRAMEWORK_SERVER_H__
+#ifndef __NETCACHE_FRAMEWORK_SERVER_H__
+#define __NETCACHE_FRAMEWORK_SERVER_H__
 
 #include <memory>
 #include <functional>

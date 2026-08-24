@@ -1,5 +1,5 @@
-#ifndef __NETBASE_FRAMEWORK_LOG_LOG_H__
-#define __NETBASE_FRAMEWORK_LOG_LOG_H__
+#ifndef __NETCACHE_FRAMEWORK_LOG_LOG_H__
+#define __NETCACHE_FRAMEWORK_LOG_LOG_H__
 
 #include <format>
 #include <vector>

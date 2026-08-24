@@ -1,30 +1,30 @@
-#ifndef __NETBASE_FRAMEWORK_ASIO_H__
-#define __NETBASE_FRAMEWORK_ASIO_H__
+#ifndef __NETCACHE_FRAMEWORK_ASIO_H__
+#define __NETCACHE_FRAMEWORK_ASIO_H__
 
 #define ASIO_SEPARATE_COMPILATION
 
-#if defined(NETBASE_MSVC)
+#if defined(NETCACHE_MSVC)
 #pragma warning(push)
 #pragma warning(disable: 6255 26439 26495 6387 6031 6258 6031 26110 28112 26819 26437)
 
-#elif defined(NETBASE_CLANG)
+#elif defined(NETCACHE_CLANG)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "--"
 
-#elif defined(NETBASE_GCC)
+#elif defined(NETCACHE_GCC)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "--"
 #endif
 
 #include "asio.hpp"
 
-#if defined(NETBASE_MSVC)
+#if defined(NETCACHE_MSVC)
 #pragma warning(pop)
 
-#elif defined(NETBASE_CLANG)
+#elif defined(NETCACHE_CLANG)
 #pragma clang diagnostic pop
 
-#elif defined(NETBASE_GCC)
+#elif defined(NETCACHE_GCC)
 #pragma GCC diagnostic pop
 #endif
 

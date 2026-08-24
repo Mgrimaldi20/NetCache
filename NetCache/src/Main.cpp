@@ -36,9 +36,9 @@ int main(int argc, char **argv)
 			return 1;
 
 		std::shared_ptr<Log> log = std::make_shared<Log>(
-			"NetBase",
+			"NetCache",
 			std::make_shared<Driver>(
-				"NetBaseMainLogDriver",
+				"NetCacheMainLogDriver",
 				std::vector<std::shared_ptr<Sink>>
 				{
 					std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>())
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 		// single thread hint
 		asio::io_context ioctx(1);
 
-		Server server(ioctx, serverport, log, dispatcher, *parser);
+		Server server(ioctx, serverport, log, dispatcher, parser);
 
 		ioctx.run();
 

@@ -80,7 +80,7 @@ target_sources(NetCache PRIVATE
 	"src/framework/log/policy/trace/StacktracePolicy.cpp"
 	"src/framework/log/policy/trace/SourceLocationPolicy.h"
 	"src/framework/log/policy/trace/SourceLocationPolicy.cpp"
-)
+ "src/protocol/Parser.h")
 
 message(STATUS "The full source include path is ${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_include_directories(NetCache PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")

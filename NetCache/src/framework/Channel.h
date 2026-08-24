@@ -1,5 +1,5 @@
-#ifndef __NETBASE_FRAMEWORK_CHANNEL_H__
-#define __NETBASE_FRAMEWORK_CHANNEL_H__
+#ifndef __NETCACHE_FRAMEWORK_CHANNEL_H__
+#define __NETCACHE_FRAMEWORK_CHANNEL_H__
 
 #include <string>
 #include <memory>
