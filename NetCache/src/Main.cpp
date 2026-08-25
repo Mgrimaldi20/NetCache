@@ -22,6 +22,8 @@
 #include "framework/log/policy/trace/StacktracePolicy.h"
 #include "framework/log/policy/trace/SourceLocationPolicy.h"
 
+#include "protocol/Parser.h"
+
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
 static asio::ip::port_type serverport = NET_DEFAULT_PORT;
@@ -53,19 +55,22 @@ int main(int argc, char **argv)
 		);
 
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
+
+		// TODO: Prolly not needed
 		std::shared_ptr<ChannelManager> chmanager = std::make_shared<ChannelManager>(log);
 
 		// TODO: Register commands here within the system
 		log->Info("Registered protocol commands in the CmdSystem");
 
-		log->Info("Started NetCache");
+		// TODO: Impl this interface
+		std::shared_ptr<Parser> parser = nullptr;
 
-		// put here because if the dylib is unloaded first, it causes a segfault
-		// need to fix and make more robust as its a big problem
 		// single thread hint
 		asio::io_context ioctx(1);
 
 		Server server(ioctx, serverport, log, dispatcher, parser);
+
+		log->Info("Started NetCache");
 
 		ioctx.run();
 

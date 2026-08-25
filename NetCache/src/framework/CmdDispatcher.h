@@ -1,10 +1,9 @@
 #ifndef __NETCACHE_FRAMEWORK_CMDDISPATCHER_H__
 #define __NETCACHE_FRAMEWORK_CMDDISPATCHER_H__
 
-#include <cstdint>
 #include <memory>
 #include <functional>
-#include <string_view>
+#include <string>
 #include <initializer_list>
 #include <utility>
 #include <unordered_map>
@@ -12,6 +11,8 @@
 #include "Client.h"
 
 #include "log/Log.h"
+
+#include "../protocol/Parser.h"
 
 /*
 * Class: CmdDispatcher
@@ -26,18 +27,18 @@
 class CmdDispatcher
 {
 public:
-	using CmdHandlerFn = std::function<void(std::weak_ptr<Client>, const ClientAPI::Parser::ParsedCmd &)>;
+	using CmdHandlerFn = std::function<void(std::shared_ptr<Client>, const Parser::ParsedCmd &)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
 
-	void Register(std::uint_least16_t cmdid, CmdHandlerFn fn);
-	void Register(std::initializer_list<std::pair<std::uint_least16_t, CmdHandlerFn>> elems);
+	void Register(const std::string &cmdid, CmdHandlerFn fn);
+	void Register(std::initializer_list<std::pair<std::string, CmdHandlerFn>> elems);
 
-	void Dispatch(std::weak_ptr<Client> client, ClientAPI::Parser::ParsedCmd parsedcmd);
+	void Dispatch(std::shared_ptr<Client> client, const Parser::ParsedCmd &parsedcmd);
 
 private:
-	std::unordered_map<std::uint_least16_t, CmdHandlerFn> handlers;
+	std::unordered_map<std::string, CmdHandlerFn> handlers;
 
 	std::shared_ptr<Log> log;
 };

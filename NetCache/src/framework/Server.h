@@ -9,6 +9,8 @@
 
 #include "log/Log.h"
 
+#include "../protocol/Parser.h"
+
 /*
 * Class: Server
 * The main server class, responsible for accepting incoming connections and spawning sessions.
@@ -22,7 +24,7 @@ public:
 		asio::ip::port_type port,
 		std::shared_ptr<Log> log,
 		std::shared_ptr<CmdDispatcher> dispatcher,
-		ClientAPI::Parser &parser
+		std::shared_ptr<Parser> parser
 	);
 
 	Server(const Server &) = delete;
@@ -37,7 +39,7 @@ private:
 	asio::awaitable<void> Listener(
 		asio::ip::port_type port,
 		std::shared_ptr<CmdDispatcher> dispatcher,
-		ClientAPI::Parser &parser
+		std::shared_ptr<Parser> parser
 	);
 
 	void RegisterSignals();

@@ -43,6 +43,7 @@ endif()
 # Specify the common OS independent source files for the NetCache project
 target_sources(NetCache PRIVATE
 	"src/Main.cpp"
+	"src/protocol/Parser.h"
 	"src/framework/Asio.h"
 	"src/framework/Asio.cpp"
 	"src/framework/Server.h"
@@ -80,7 +81,7 @@ target_sources(NetCache PRIVATE
 	"src/framework/log/policy/trace/StacktracePolicy.cpp"
 	"src/framework/log/policy/trace/SourceLocationPolicy.h"
 	"src/framework/log/policy/trace/SourceLocationPolicy.cpp"
- "src/protocol/Parser.h")
+)
 
 message(STATUS "The full source include path is ${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_include_directories(NetCache PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")

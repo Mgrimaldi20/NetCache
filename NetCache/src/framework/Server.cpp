@@ -12,7 +12,7 @@ Server::Server(
 	asio::ip::port_type port,
 	std::shared_ptr<Log> log,
 	std::shared_ptr<CmdDispatcher> dispatcher,
-	ClientAPI::Parser &parser
+	std::shared_ptr<Parser> parser
 )
 	: ioctx(ioctx),
 	log(log),
@@ -36,7 +36,7 @@ Server::~Server()
 asio::awaitable<void> Server::Listener(
 	asio::ip::port_type port,
 	std::shared_ptr<CmdDispatcher> dispatcher,
-	ClientAPI::Parser &parser
+	std::shared_ptr<Parser> parser
 )
 {
 	asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), port);

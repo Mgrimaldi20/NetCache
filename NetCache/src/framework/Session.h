@@ -5,13 +5,14 @@
 #include <string>
 #include <queue>
 #include <string_view>
-#include <functional>
 
 #include "Asio.h"
 #include "Channel.h"
 #include "CmdDispatcher.h"
 
 #include "log/Log.h"
+
+#include "../protocol/Parser.h"
 
 #include "Client.h"
 
@@ -31,7 +32,7 @@ public:
 	Session(
 		asio::ip::tcp::socket socket,
 		std::shared_ptr<CmdDispatcher> dispatcher,
-		ClientAPI::Parser &parser,
+		std::shared_ptr<Parser> parser,
 		std::shared_ptr<Log> log
 	);
 
@@ -55,7 +56,7 @@ private:
 
 	asio::ip::tcp::socket socket;
 	std::shared_ptr<CmdDispatcher> dispatcher;
-	std::reference_wrapper<ClientAPI::Parser> parser;
+	std::shared_ptr<Parser> parser;
 	std::shared_ptr<Log> log;
 };
 

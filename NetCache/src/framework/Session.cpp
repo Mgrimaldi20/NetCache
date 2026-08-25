@@ -7,7 +7,7 @@
 Session::Session(
 	asio::ip::tcp::socket socket,
 	std::shared_ptr<CmdDispatcher> dispatcher,
-	ClientAPI::Parser &parser,
+	std::shared_ptr<Parser> parser,
 	std::shared_ptr<Log> log
 )
 	: writequeue(),
@@ -83,7 +83,7 @@ asio::awaitable<void> Session::Reader()
 
 			message.resize(n);
 
-			ClientAPI::Parser::ParsedCmd parsedcmd = parser.get().Parse(message.c_str(), message.size());
+			Parser::ParsedCmd parsedcmd = parser->Parse(message);
 			dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
 		}
 	}
