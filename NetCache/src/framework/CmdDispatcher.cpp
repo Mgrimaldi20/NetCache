@@ -17,7 +17,7 @@ void CmdDispatcher::Register(const std::string &cmdid, CmdHandlerFn fn)
 	bool inserted = handlers.emplace(cmdid, fn).second;
 
 	if (!inserted)
-		log->Warn("Failed to register CmdHandler");
+		log->Warn("Failed to register CmdHandler function");
 
 	log->Info("Registered command with ID: {}", cmdid);
 }
@@ -32,8 +32,6 @@ void CmdDispatcher::Dispatch(std::shared_ptr<Client> client, const Parser::Parse
 {
 	auto handler = handlers.find(parsedcmd.cmdid);
 
-	if (!handler)
-		return;
-
-	handler(client, parsedcmd);
+	if (handler != handlers.end())
+		handler->second(client, parsedcmd);
 }
