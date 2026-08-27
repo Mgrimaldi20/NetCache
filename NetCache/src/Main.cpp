@@ -10,7 +10,6 @@
 #include "framework/Asio.h"
 #include "framework/Server.h"
 #include "framework/CmdDispatcher.h"
-#include "framework/ChannelManager.h"
 
 #include "framework/log/Log.h"
 #include "framework/log/driver/Driver.h"
@@ -55,9 +54,6 @@ int main(int argc, char **argv)
 		);
 
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
-
-		// TODO: Prolly not needed
-		std::shared_ptr<ChannelManager> chmanager = std::make_shared<ChannelManager>(log);
 
 		// TODO: Register commands here within the system
 		log->Info("Registered protocol commands in the CmdSystem");
