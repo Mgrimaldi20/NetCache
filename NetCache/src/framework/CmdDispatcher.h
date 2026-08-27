@@ -32,7 +32,7 @@ public:
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
 
-	void Register(const std::string &cmdid, CmdHandlerFn fn);
+	void Register(std::string cmdid, CmdHandlerFn fn);
 	void Register(std::initializer_list<std::pair<std::string, CmdHandlerFn>> elems);
 
 	void Dispatch(std::shared_ptr<Client> client, const Parser::ParsedCmd &parsedcmd);

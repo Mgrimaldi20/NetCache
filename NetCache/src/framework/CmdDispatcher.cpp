@@ -12,9 +12,9 @@ CmdDispatcher::~CmdDispatcher()
 	log->Info("Shutting down the Command Dispatcher");
 }
 
-void CmdDispatcher::Register(const std::string &cmdid, CmdHandlerFn fn)
+void CmdDispatcher::Register(std::string cmdid, CmdHandlerFn fn)
 {
-	bool inserted = handlers.emplace(cmdid, fn).second;
+	bool inserted = handlers.emplace(std::move(cmdid), fn).second;
 
 	if (!inserted)
 		log->Warn("Failed to register CmdHandler function");
