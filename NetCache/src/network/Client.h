@@ -1,5 +1,5 @@
-#ifndef __NETCACHE_FRAMEWORK_CLIENT_H__
-#define __NETCACHE_FRAMEWORK_CLIENT_H__
+#ifndef __NETCACHE_NETWORK_CLIENT_H__
+#define __NETCACHE_NETWORK_CLIENT_H__
 
 #include <string_view>
 #include <string>

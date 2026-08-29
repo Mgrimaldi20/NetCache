@@ -1,5 +1,5 @@
-#ifndef __NETCACHE_FRAMEWORK_SESSION_H__
-#define __NETCACHE_FRAMEWORK_SESSION_H__
+#ifndef __NETCACHE_NETWORK_SESSION_H__
+#define __NETCACHE_NETWORK_SESSION_H__
 
 #include <memory>
 #include <string>

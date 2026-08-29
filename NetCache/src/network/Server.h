@@ -1,5 +1,5 @@
-#ifndef __NETCACHE_FRAMEWORK_SERVER_H__
-#define __NETCACHE_FRAMEWORK_SERVER_H__
+#ifndef __NETCACHE_NETWORK_SERVER_H__
+#define __NETCACHE_NETWORK_SERVER_H__
 
 #include <memory>
 #include <functional>
@@ -9,7 +9,7 @@
 #include "framework/CmdDispatcher.h"
 #include "framework/log/Log.h"
 
-#include "../protocol/Parser.h"
+#include "protocol/Parser.h"
 
 /*
 * Class: Server
@@ -36,10 +36,12 @@ public:
 	~Server();
 
 private:
-	asio::awaitable<void> Listener(
+	static asio::awaitable<void> Listener(
+		asio::io_context &ioctx,
 		asio::ip::port_type port,
 		std::shared_ptr<CmdDispatcher> dispatcher,
-		std::shared_ptr<Parser> parser
+		std::shared_ptr<Parser> parser,
+		std::shared_ptr<Log> log
 	);
 
 	void RegisterSignals();
