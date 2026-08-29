@@ -43,14 +43,17 @@ endif()
 # Specify the common OS independent source files for the NetCache project
 target_sources(NetCache PRIVATE
 	"src/Main.cpp"
+
+	"src/network/Asio.h"
+	"src/network/Asio.cpp"
+	"src/network/Server.h"
+	"src/network/Server.cpp"
+	"src/network/Client.h"
+	"src/network/Session.h"
+	"src/network/Session.cpp"
+
 	"src/protocol/Parser.h"
-	"src/framework/Asio.h"
-	"src/framework/Asio.cpp"
-	"src/framework/Server.h"
-	"src/framework/Server.cpp"
-	"src/framework/Client.h"
-	"src/framework/Session.h"
-	"src/framework/Session.cpp"
+
 	"src/framework/CmdDispatcher.h"
 	"src/framework/CmdDispatcher.cpp"
 	"src/framework/log/Log.h"

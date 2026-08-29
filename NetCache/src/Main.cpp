@@ -7,10 +7,12 @@
 #include <exception>
 #include <vector>
 
-#include "framework/Asio.h"
-#include "framework/Server.h"
-#include "framework/CmdDispatcher.h"
+#include "network/Asio.h"
+#include "network/Server.h"
 
+#include "protocol/Parser.h"
+
+#include "framework/CmdDispatcher.h"
 #include "framework/log/Log.h"
 #include "framework/log/driver/Driver.h"
 #include "framework/log/entry/Entry.h"
@@ -20,8 +22,6 @@
 #include "framework/log/policy/level/LevelPolicy.h"
 #include "framework/log/policy/trace/StacktracePolicy.h"
 #include "framework/log/policy/trace/SourceLocationPolicy.h"
-
-#include "protocol/Parser.h"
 
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
