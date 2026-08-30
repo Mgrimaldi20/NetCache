@@ -16,12 +16,13 @@ Server::Server(
 )
 	: ioctx(ioctx),
 	log(log),
-	signals(ioctx, NET_SIGINT, NET_SIGTERM)
+	signals(ioctx, NET_SIGINT, NET_SIGTERM),
+	acceptor(ioctx, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
 {
 	RegisterSignals();
 
 	// start the server and listen for incoming connections on the specified port number
-	asio::co_spawn(ioctx, Listener(ioctx, port, dispatcher, parser, log), asio::detached);
+	asio::co_spawn(ioctx, Listener(), asio::detached);
 
 	log->Info("Server started");
 	log->Info("NetCache server running on port: {}", port);
@@ -35,20 +36,11 @@ Server::~Server()
 	signals.cancel();
 }
 
-asio::awaitable<void> Server::Listener(
-	asio::io_context &ioctx,
-	asio::ip::port_type port,
-	std::shared_ptr<CmdDispatcher> dispatcher,
-	std::shared_ptr<Parser> parser,
-	std::shared_ptr<Log> log
-)
+asio::awaitable<void> Server::Listener()
 {
 	try
 	{
-		asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), port);
-		asio::ip::tcp::acceptor acceptor(ioctx, endpoint);
-
-		log->Info("Listerner started");
+		log->Info("Listener started");
 
 		while (true)
 		{
@@ -73,7 +65,7 @@ asio::awaitable<void> Server::Listener(
 
 	catch (const std::exception &e)
 	{
-		log->Info("Listener exiting due to exception: {}", e.what());
+		log->Error("Listener exiting due to exception: {}", e.what());
 	}
 }
 
@@ -103,6 +95,16 @@ void Server::RegisterSignals()
 
 		log->Info("Signal received: {} : {}", signal, GetSignalStr(signal));
 
-		ioctx.get().stop();
+		Stop();
 	});
+}
+
+void Server::Stop()
+{
+	log->Info("Stopping the Server");
+
+	asio::error_code ec;
+
+	acceptor.cancel(ec);
+	acceptor.close(ec);
 }
