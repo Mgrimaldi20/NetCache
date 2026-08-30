@@ -16,6 +16,8 @@ Server::Server(
 )
 	: ioctx(ioctx),
 	log(log),
+	dispatcher(dispatcher),
+	parser(parser),
 	signals(ioctx, NET_SIGINT, NET_SIGTERM),
 	acceptor(ioctx, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
 {

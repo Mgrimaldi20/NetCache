@@ -43,9 +43,9 @@ private:
 
 	std::reference_wrapper<asio::io_context> ioctx;
 	asio::ip::port_type port;
+	std::shared_ptr<Log> log;
 	std::shared_ptr<CmdDispatcher> dispatcher;
 	std::shared_ptr<Parser> parser;
-	std::shared_ptr<Log> log;
 
 	asio::signal_set signals;
 	asio::ip::tcp::acceptor acceptor;
