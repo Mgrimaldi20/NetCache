@@ -52,6 +52,7 @@ target_sources(NetCache PRIVATE
 	"src/network/Session.h"
 	"src/network/Session.cpp"
 
+	"src/protocol/Framer.h"
 	"src/protocol/Parser.h"
 
 	"src/framework/CmdDispatcher.h"

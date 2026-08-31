@@ -3,6 +3,12 @@
 
 #include <string_view>
 
+/*
+* Class: Parser
+* The main interface to represent a parser, breaks up parts of the message into logical components.
+* 
+*	Parse: Breaks up the message into a parsed command
+*/
 class Parser
 {
 public:
