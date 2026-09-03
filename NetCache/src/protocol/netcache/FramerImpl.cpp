@@ -74,7 +74,7 @@ void FramerImpl::Feed(std::string_view data, FrameCallbackFn cbfn)
 	}
 }
 
-std::uint64_t FramerImpl::ReadUInt64(std::string_view data, std::size_t offset)
+std::uint64_t FramerImpl::ReadUInt64(std::string_view data)
 {
 	constexpr std::size_t UINT64_SIZE = sizeof(std::uint64_t);
 
@@ -84,7 +84,7 @@ std::uint64_t FramerImpl::ReadUInt64(std::string_view data, std::size_t offset)
 	std::array<char, UINT64_SIZE> bytes;
 
 	for (std::size_t i=0; i<UINT64_SIZE; i++)
-		bytes[i] = data[offset + i];
+		bytes[i] = data[i];
 
 	std::uint64_t value = std::bit_cast<std::uint64_t>(bytes);
 
@@ -107,7 +107,7 @@ std::size_t FramerImpl::GetFrameSize(std::string_view data)
 		throw std::runtime_error(std::format("Invalid version, expected: {}, got: {}", NC_VERSION, version));
 
 	constexpr size_t START_REMAINING_LEN_OFFSET = 3;
-	std::uint64_t remaininglen = ReadUInt64(data, START_REMAINING_LEN_OFFSET);
+	std::uint64_t remaininglen = ReadUInt64(data.substr(START_REMAINING_LEN_OFFSET));
 
 	if (remaininglen > std::numeric_limits<std::size_t>::max() - NC_HEADER_SIZE)
 		throw std::runtime_error("Frame size overflow");
