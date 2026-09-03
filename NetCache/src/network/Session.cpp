@@ -1,13 +1,16 @@
 #include <chrono>
 #include <exception>
 #include <system_error>
+#include <optional>
+#include <array>
+
+#include "protocol/netcache/FramerImpl.h"
 
 #include "Session.h"
 
 Session::Session(
 	asio::ip::tcp::socket socket,
 	std::shared_ptr<CmdDispatcher> dispatcher,
-	std::shared_ptr<Parser> parser,
 	std::shared_ptr<Log> log
 )
 	: writequeue(),
@@ -15,8 +18,9 @@ Session::Session(
 	timer(socket.get_executor()),
 	socket(std::move(socket)),
 	dispatcher(dispatcher),
-	parser(parser),
-	log(log)
+	log(log),
+	framer(std::make_unique<FramerImpl>(log)),
+	parser(nullptr)
 {
 	timer.expires_at(std::chrono::steady_clock::time_point::max());
 
@@ -61,15 +65,14 @@ asio::awaitable<void> Session::Reader()
 {
 	try
 	{
+		std::array<char, 1024> data;
+
 		while (true)
 		{
-			std::string message;
-			message.resize(1024);
-
 			asio::error_code ec;
 
 			std::size_t n = co_await socket.async_read_some(
-				asio::buffer(message, message.size()),
+				asio::buffer(data, data.size()),
 				asio::redirect_error(asio::use_awaitable, ec)
 			);
 
@@ -79,12 +82,13 @@ asio::awaitable<void> Session::Reader()
 			if (ec)
 				throw std::system_error(ec);
 
-			log->Debug("Received message from Client {}: [{} bytes] :: {}", clientaddr, n, message);
+			log->Debug("Received data from Client {}: [{} bytes] :: {}", clientaddr, n, data);
 
-			message.resize(n);
-
-			Parser::ParsedCmd parsedcmd = parser->Parse(message);
-			dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
+			framer->Feed(std::string_view(data), [this](std::string_view frame)
+			{
+				Parser::ParsedCmd parsedcmd = parser->Parse(frame);
+				dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
+			});
 		}
 	}
 

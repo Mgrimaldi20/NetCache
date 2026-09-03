@@ -11,13 +11,11 @@ Server::Server(
 	asio::io_context &ioctx,
 	asio::ip::port_type port,
 	std::shared_ptr<Log> log,
-	std::shared_ptr<CmdDispatcher> dispatcher,
-	std::shared_ptr<Parser> parser
+	std::shared_ptr<CmdDispatcher> dispatcher
 )
 	: ioctx(ioctx),
 	log(log),
 	dispatcher(dispatcher),
-	parser(parser),
 	signals(ioctx, NET_SIGINT, NET_SIGTERM),
 	acceptor(ioctx, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
 {
@@ -61,7 +59,7 @@ asio::awaitable<void> Server::Listener()
 				continue;
 			}
 
-			std::make_shared<Session>(std::move(socket), dispatcher, parser, log)->Start();
+			std::make_shared<Session>(std::move(socket), dispatcher, log)->Start();
 		}
 	}
 

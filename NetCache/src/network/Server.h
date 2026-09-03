@@ -9,8 +9,6 @@
 #include "framework/CmdDispatcher.h"
 #include "framework/log/Log.h"
 
-#include "protocol/Parser.h"
-
 /*
 * Class: Server
 * The main server class, responsible for accepting incoming connections and spawning sessions.
@@ -23,8 +21,7 @@ public:
 		asio::io_context &ioctx,
 		asio::ip::port_type port,
 		std::shared_ptr<Log> log,
-		std::shared_ptr<CmdDispatcher> dispatcher,
-		std::shared_ptr<Parser> parser
+		std::shared_ptr<CmdDispatcher> dispatcher
 	);
 
 	Server(const Server &) = delete;
@@ -45,7 +42,6 @@ private:
 	asio::ip::port_type port;
 	std::shared_ptr<Log> log;
 	std::shared_ptr<CmdDispatcher> dispatcher;
-	std::shared_ptr<Parser> parser;
 
 	asio::signal_set signals;
 	asio::ip::tcp::acceptor acceptor;

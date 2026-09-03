@@ -10,8 +10,6 @@
 #include "network/Asio.h"
 #include "network/Server.h"
 
-#include "protocol/Parser.h"
-
 #include "framework/CmdDispatcher.h"
 #include "framework/log/Log.h"
 #include "framework/log/driver/Driver.h"
@@ -58,13 +56,10 @@ int main(int argc, char **argv)
 		// TODO: Register commands here within the system
 		log->Info("Registered protocol commands in the CmdSystem");
 
-		// TODO: Impl this interface
-		std::shared_ptr<Parser> parser = nullptr;
-
 		// single thread hint
 		asio::io_context ioctx(1);
 
-		Server server(ioctx, serverport, log, dispatcher, parser);
+		Server server(ioctx, serverport, log, dispatcher);
 
 		log->Info("Started NetCache");
 
