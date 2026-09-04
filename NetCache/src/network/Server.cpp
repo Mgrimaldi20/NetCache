@@ -24,9 +24,8 @@ Server::Server(
 	// start the server and listen for incoming connections on the specified port number
 	asio::co_spawn(ioctx, Listener(), asio::detached);
 
-	log->Info("Server started");
-	log->Info("NetCache server running on port: {}", port);
-	log->Info("Press Ctrl-C to exit...");
+	log->Info("Server started, listening on port: {}", port);
+	log->Info("Press Ctrl/Cmd + C to exit...");
 }
 
 Server::~Server()
@@ -40,8 +39,6 @@ asio::awaitable<void> Server::Listener()
 {
 	try
 	{
-		log->Info("Listener started");
-
 		while (true)
 		{
 			asio::error_code ec;

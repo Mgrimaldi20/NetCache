@@ -17,7 +17,7 @@ Log::Log(std::string logname, std::shared_ptr<Driver> driver)
 	for (const auto &policyname : driver->GetPolicyConfig())
 		Info("Attached policy: {}", policyname);
 
-	Info("Logger started: {}", logname);
+	Info("Logger started: {}", this->logname);
 }
 
 Log::~Log()

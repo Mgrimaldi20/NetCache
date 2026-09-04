@@ -3,6 +3,7 @@
 #include <system_error>
 #include <optional>
 #include <array>
+#include <span>
 
 #include "protocol/netcache/FramerImpl.h"
 
@@ -82,7 +83,12 @@ asio::awaitable<void> Session::Reader()
 			if (ec)
 				throw std::system_error(ec);
 
-			log->Debug("Received data from Client {}: [{} bytes] :: {}", clientaddr, n, data);
+			log->Debug(
+				"Received data from Client {}: [{} bytes] :: {}",
+				clientaddr,
+				n,
+				std::span<char>(data).subspan(0, n)
+			);
 
 			framer->Feed(std::string_view(data), [this](std::string_view frame)
 			{
