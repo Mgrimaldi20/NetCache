@@ -26,7 +26,7 @@
 class CmdDispatcher
 {
 public:
-	using CmdHandlerFn = std::function<void(std::shared_ptr<Client>, const Parser::ParsedCmd &)>;
+	using CmdHandlerFn = std::function<void(std::shared_ptr<Client>, const Parser::PayloadType &)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();

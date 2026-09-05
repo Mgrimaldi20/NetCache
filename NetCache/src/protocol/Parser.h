@@ -2,6 +2,7 @@
 #define __NETCACHE_PROTOCOL_PARSER_H__
 
 #include <string_view>
+#include <span>
 
 /*
 * Class: Parser
@@ -12,16 +13,18 @@
 class Parser
 {
 public:
+	using PayloadType = std::span<const std::string_view>;
+
 	struct ParsedCmd
 	{
 		std::string_view cmdid;
-		std::string_view data;
+		PayloadType args;
 	};
 
 	Parser() = default;
 	virtual ~Parser() = default;
 
-	virtual Parser::ParsedCmd Parse(std::string_view data) = 0;
+	virtual Parser::ParsedCmd Parse(std::string_view frame) = 0;
 };
 
 #endif

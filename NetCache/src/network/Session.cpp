@@ -6,6 +6,7 @@
 #include <span>
 
 #include "protocol/netcache/FramerImpl.h"
+#include "protocol/netcache/ParserImpl.h"
 
 #include "Session.h"
 
@@ -21,7 +22,7 @@ Session::Session(
 	dispatcher(dispatcher),
 	log(log),
 	framer(std::make_unique<FramerImpl>(log)),
-	parser(nullptr)
+	parser(std::make_unique<ParserImpl>(log))
 {
 	timer.expires_at(std::chrono::steady_clock::time_point::max());
 

@@ -79,7 +79,7 @@ std::uint32_t FramerImpl::ReadUInt32(std::string_view data)
 	constexpr std::size_t UINT32_SIZE = sizeof(std::uint32_t);
 
 	if (data.size() < UINT32_SIZE)
-		throw std::runtime_error("Insufficient data for 64 bit integer read");
+		throw std::runtime_error("Insufficient data for 32 bit integer read");
 
 	std::array<char, UINT32_SIZE> bytes;
 
@@ -89,10 +89,9 @@ std::uint32_t FramerImpl::ReadUInt32(std::string_view data)
 	std::uint32_t value = std::bit_cast<std::uint32_t>(bytes);
 
 	if constexpr (std::endian::native == std::endian::little)
-		return std::byteswap(value);
+		value = std::byteswap(value);
 
-	else
-		return value;
+	return value;
 }
 
 std::size_t FramerImpl::GetFrameSize(std::string_view data)

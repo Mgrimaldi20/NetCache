@@ -56,6 +56,8 @@ target_sources(NetCache PRIVATE
 	"src/protocol/Parser.h"
 	"src/protocol/netcache/FramerImpl.h"
 	"src/protocol/netcache/FramerImpl.cpp"
+	"src/protocol/netcache/ParserImpl.h"
+	"src/protocol/netcache/ParserImpl.cpp"
 
 	"src/framework/CmdDispatcher.h"
 	"src/framework/CmdDispatcher.cpp"

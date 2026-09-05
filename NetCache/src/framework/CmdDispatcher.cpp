@@ -33,5 +33,5 @@ void CmdDispatcher::Dispatch(std::shared_ptr<Client> client, const Parser::Parse
 	auto handler = handlers.find(parsedcmd.cmdid);
 
 	if (handler != handlers.end())
-		handler->second(client, parsedcmd);
+		handler->second(client, parsedcmd.args);
 }
