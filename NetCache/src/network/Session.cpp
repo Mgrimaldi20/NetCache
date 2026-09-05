@@ -91,7 +91,7 @@ asio::awaitable<void> Session::Reader()
 				std::span<char>(data).subspan(0, n)
 			);
 
-			framer->Feed(std::string_view(data), [this](std::string_view frame)
+			framer->Feed(std::string_view(data.data(), n), [this](std::string_view frame)
 			{
 				Parser::ParsedCmd parsedcmd = parser->Parse(frame);
 				dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
