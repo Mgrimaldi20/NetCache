@@ -94,7 +94,10 @@ asio::awaitable<void> Session::Reader()
 			framer->Feed(std::string_view(data.data(), n), [this](std::string_view frame)
 			{
 				Parser::ParsedCmd parsedcmd = parser->Parse(frame);
-				dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
+				std::optional<std::string> res = std::move(dispatcher->Dispatch(parsedcmd));
+
+				if (res)
+					Send(*res);
 			});
 		}
 	}

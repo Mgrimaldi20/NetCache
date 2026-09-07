@@ -28,10 +28,12 @@ void CmdDispatcher::Register(std::initializer_list<std::pair<std::string, CmdHan
 		Register(key, val);
 }
 
-void CmdDispatcher::Dispatch(std::shared_ptr<Client> client, const Parser::ParsedCmd &parsedcmd)
+std::optional<std::string> CmdDispatcher::Dispatch(const Parser::ParsedCmd &parsedcmd)
 {
 	auto handler = handlers.find(parsedcmd.cmdid);
 
-	if (handler != handlers.end())
-		handler->second(client, parsedcmd.args);
+	if (handler == handlers.end())
+		return std::nullopt;
+
+	return handler->second(parsedcmd.args);
 }

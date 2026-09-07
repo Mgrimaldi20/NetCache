@@ -7,6 +7,7 @@
 #include <initializer_list>
 #include <utility>
 #include <unordered_map>
+#include <optional>
 
 #include "network/Client.h"
 
@@ -26,7 +27,7 @@
 class CmdDispatcher
 {
 public:
-	using CmdHandlerFn = std::function<void(std::shared_ptr<Client>, const Parser::PayloadType &)>;
+	using CmdHandlerFn = std::function<std::string(const Parser::PayloadType &)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
@@ -34,7 +35,7 @@ public:
 	void Register(std::string cmdid, CmdHandlerFn fn);
 	void Register(std::initializer_list<std::pair<std::string, CmdHandlerFn>> elems);
 
-	void Dispatch(std::shared_ptr<Client> client, const Parser::ParsedCmd &parsedcmd);
+	std::optional<std::string> Dispatch(const Parser::ParsedCmd &parsedcmd);
 
 private:
 	struct StringHash
