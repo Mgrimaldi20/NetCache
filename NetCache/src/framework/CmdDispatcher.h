@@ -27,15 +27,16 @@
 class CmdDispatcher
 {
 public:
-	using CmdHandlerFn = std::function<std::string(const Parser::PayloadType &)>;
+	using CmdHandlerRetType = std::optional<std::string>;
+	using CmdHandlerFn = std::function<CmdHandlerRetType(const Parser::PayloadType &)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
 
-	void Register(std::string cmdid, CmdHandlerFn fn);
-	void Register(std::initializer_list<std::pair<std::string, CmdHandlerFn>> elems);
+	void Register(const std::string &cmdid, CmdHandlerFn fn);
+	void Register(std::initializer_list<std::pair<std::string &, CmdHandlerFn>> elems);
 
-	std::optional<std::string> Dispatch(const Parser::ParsedCmd &parsedcmd);
+	CmdHandlerRetType Dispatch(const Parser::ParsedCmd &parsedcmd);
 
 private:
 	struct StringHash

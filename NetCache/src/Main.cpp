@@ -54,6 +54,14 @@ int main(int argc, char **argv)
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 
 		// TODO: Register commands here within the system
+		dispatcher->Register(
+			"\x1",
+			[&](const Parser::PayloadType &pl) -> CmdDispatcher::CmdHandlerRetType
+			{
+				return std::string(pl[1]);
+			}
+		);
+
 		log->Info("Registered protocol commands in the CmdSystem");
 
 		// single thread hint

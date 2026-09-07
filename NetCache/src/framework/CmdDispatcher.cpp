@@ -12,23 +12,23 @@ CmdDispatcher::~CmdDispatcher()
 	log->Info("Shutting down the Command Dispatcher");
 }
 
-void CmdDispatcher::Register(std::string cmdid, CmdHandlerFn fn)
+void CmdDispatcher::Register(const std::string &cmdid, CmdHandlerFn fn)
 {
-	bool inserted = handlers.emplace(std::move(cmdid), fn).second;
+	bool inserted = handlers.emplace(cmdid, fn).second;
 
 	if (!inserted)
 		log->Warn("Failed to register CmdHandler function");
 
-	log->Info("Registered command with ID: {}", cmdid);
+	log->Info("Registered command with ID: {}", std::span<const char>(cmdid));
 }
 
-void CmdDispatcher::Register(std::initializer_list<std::pair<std::string, CmdHandlerFn>> elems)
+void CmdDispatcher::Register(std::initializer_list<std::pair<std::string &, CmdHandlerFn>> elems)
 {
 	for (auto &[key, val] : elems)
 		Register(key, val);
 }
 
-std::optional<std::string> CmdDispatcher::Dispatch(const Parser::ParsedCmd &parsedcmd)
+CmdDispatcher::CmdHandlerRetType CmdDispatcher::Dispatch(const Parser::ParsedCmd &parsedcmd)
 {
 	auto handler = handlers.find(parsedcmd.cmdid);
 
