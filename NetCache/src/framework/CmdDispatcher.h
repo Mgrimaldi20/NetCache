@@ -34,7 +34,10 @@ public:
 	~CmdDispatcher();
 
 	void Register(const std::string &cmdid, CmdHandlerFn fn);
-	void Register(std::initializer_list<std::pair<std::string &, CmdHandlerFn>> elems);
+	void Register(std::initializer_list<std::pair<const std::string &, CmdHandlerFn>> elems);
+
+	template<typename ...Args>
+	void Register(Args && ...args);
 
 	CmdHandlerRetType Dispatch(const Parser::ParsedCmd &parsedcmd);
 
@@ -46,9 +49,16 @@ private:
 		size_t operator()(const std::string &s) const { return std::hash<std::string>{}(s); }
 	};
 
-	std::unordered_map<std::string, CmdHandlerFn, CmdDispatcher::StringHash, std::equal_to<>> handlers;
+	std::unordered_map<std::string, CmdHandlerFn, StringHash, std::equal_to<>> handlers;
 
 	std::shared_ptr<Log> log;
 };
+
+template<typename ...Args>
+inline void CmdDispatcher::Register(Args && ...args)
+{
+	static_assert(sizeof...(Args) % 2 == 0, "Register requires an even number of arguments!");
+	Register({ { std::forward<Args>(args)... } });
+}
 
 #endif

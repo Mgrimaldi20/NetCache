@@ -22,7 +22,7 @@ void CmdDispatcher::Register(const std::string &cmdid, CmdHandlerFn fn)
 	log->Info("Registered command with ID: {}", std::span<const char>(cmdid));
 }
 
-void CmdDispatcher::Register(std::initializer_list<std::pair<std::string &, CmdHandlerFn>> elems)
+void CmdDispatcher::Register(std::initializer_list<std::pair<const std::string &, CmdHandlerFn>> elems)
 {
 	for (auto &[key, val] : elems)
 		Register(key, val);
@@ -33,7 +33,10 @@ CmdDispatcher::CmdHandlerRetType CmdDispatcher::Dispatch(const Parser::ParsedCmd
 	auto handler = handlers.find(parsedcmd.cmdid);
 
 	if (handler == handlers.end())
+	{
+		log->Warn("Command: \"{}\" does not exist... Cannot execute", std::span<const char>(parsedcmd.cmdid));
 		return std::nullopt;
+	}
 
 	return handler->second(parsedcmd.args);
 }
