@@ -59,6 +59,8 @@ target_sources(NetCache PRIVATE
 	"src/protocol/netcache/ParserImpl.h"
 	"src/protocol/netcache/ParserImpl.cpp"
 
+	"src/framework/StringHash.h"
+	"src/framework/StringHash.cpp"
 	"src/framework/CmdDispatcher.h"
 	"src/framework/CmdDispatcher.cpp"
 	"src/framework/log/Log.h"
@@ -85,6 +87,10 @@ target_sources(NetCache PRIVATE
 	"src/framework/log/policy/trace/StacktracePolicy.cpp"
 	"src/framework/log/policy/trace/SourceLocationPolicy.h"
 	"src/framework/log/policy/trace/SourceLocationPolicy.cpp"
+
+	"src/application/Entry.h"
+	"src/application/KVStore.h"
+	"src/application/KVStore.cpp"
 )
 
 message(STATUS "The full source include path is ${CMAKE_CURRENT_SOURCE_DIR}/src")

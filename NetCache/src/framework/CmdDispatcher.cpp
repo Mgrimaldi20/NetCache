@@ -22,7 +22,7 @@ void CmdDispatcher::Register(const std::string &cmdid, CmdHandlerFn fn)
 	log->Info("Registered command with ID: {}", std::span<const char>(cmdid));
 }
 
-void CmdDispatcher::Register(std::initializer_list<std::pair<const std::string &, CmdHandlerFn>> elems)
+void CmdDispatcher::Register(std::initializer_list<std::pair<std::string, CmdHandlerFn>> elems)
 {
 	for (auto &[key, val] : elems)
 		Register(key, val);

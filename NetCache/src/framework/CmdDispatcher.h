@@ -8,11 +8,13 @@
 #include <utility>
 #include <unordered_map>
 #include <optional>
+#include <string_view>
 
 #include "network/Client.h"
 
 #include "protocol/Parser.h"
 
+#include "StringHash.h"
 #include "log/Log.h"
 
 /*
@@ -34,7 +36,7 @@ public:
 	~CmdDispatcher();
 
 	void Register(const std::string &cmdid, CmdHandlerFn fn);
-	void Register(std::initializer_list<std::pair<const std::string &, CmdHandlerFn>> elems);
+	void Register(std::initializer_list<std::pair<std::string, CmdHandlerFn>> elems);
 
 	template<typename ...Args>
 	void Register(Args && ...args);
@@ -42,13 +44,6 @@ public:
 	CmdHandlerRetType Dispatch(const Parser::ParsedCmd &parsedcmd);
 
 private:
-	struct StringHash
-	{
-		using is_transparent = void;
-		size_t operator()(std::string_view sv) const { return std::hash<std::string_view>{}(sv); }
-		size_t operator()(const std::string &s) const { return std::hash<std::string>{}(s); }
-	};
-
 	std::unordered_map<std::string, CmdHandlerFn, StringHash, std::equal_to<>> handlers;
 
 	std::shared_ptr<Log> log;

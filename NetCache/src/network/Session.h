@@ -53,12 +53,12 @@ private:
 
 	asio::steady_timer timer;
 
+	std::unique_ptr<Framer> framer;
+	std::unique_ptr<Parser> parser;
+
 	asio::ip::tcp::socket socket;
 	std::shared_ptr<CmdDispatcher> dispatcher;
 	std::shared_ptr<Log> log;
-
-	std::unique_ptr<Framer> framer;
-	std::unique_ptr<Parser> parser;
 };
 
 #endif

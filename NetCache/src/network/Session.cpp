@@ -18,11 +18,11 @@ Session::Session(
 	: writequeue(),
 	clientaddr(socket.remote_endpoint().address().to_string()),
 	timer(socket.get_executor()),
+	framer(std::make_unique<FramerImpl>(log)),
+	parser(std::make_unique<ParserImpl>(log)),
 	socket(std::move(socket)),
 	dispatcher(dispatcher),
-	log(log),
-	framer(std::make_unique<FramerImpl>(log)),
-	parser(std::make_unique<ParserImpl>(log))
+	log(log)
 {
 	timer.expires_at(std::chrono::steady_clock::time_point::max());
 
