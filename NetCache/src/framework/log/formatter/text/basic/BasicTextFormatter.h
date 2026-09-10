@@ -1,7 +1,7 @@
 #ifndef __NETCACHE_FRAMEWORK_LOG_FORMATTER_TEXT_BASIC_BASICTEXTFORMATTER_H__
 #define __NETCACHE_FRAMEWORK_LOG_FORMATTER_TEXT_BASIC_BASICTEXTFORMATTER_H__
 
-#include "../TextFormatter.h"
+#include "framework/log/sink/text/TextSink.h"
 
 /*
 * Class: TextFormatter

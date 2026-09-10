@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <fstream>
 
-#include "../TextSink.h"
+#include "framework/log/sink/text/TextSink.h"
 
 /*
 * Class: FileSink
@@ -19,15 +19,21 @@
 class FileSink : public TextSink
 {
 public:
-	FileSink(const std::filesystem::path &fullpath, std::unique_ptr<TextFormatter> formatter = {});
+	FileSink(
+		const std::filesystem::path &fullpath,
+		std::unique_ptr<TextFormatter> formatter = {},
+		std::vector<std::shared_ptr<Policy>> policies = {}
+	);
+
 	virtual ~FileSink() = default;
 
-	void Write(const Entry &entry) override final;
 	void Flush() override final;
-
 	std::string &GetName() override final;
 
 	void SetFormatter(std::unique_ptr<TextFormatter> fmtter) override final;
+
+protected:
+	void Write(const Entry &entry) override final;
 
 private:
 	std::ofstream logfile;

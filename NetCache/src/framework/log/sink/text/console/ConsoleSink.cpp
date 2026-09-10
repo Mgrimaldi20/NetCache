@@ -3,9 +3,10 @@
 
 #include "ConsoleSink.h"
 
-ConsoleSink::ConsoleSink(std::unique_ptr<TextFormatter> formatter)
+ConsoleSink::ConsoleSink(std::unique_ptr<TextFormatter> formatter, std::vector<std::shared_ptr<Policy>> policies)
 	: sinkname("STDOUT"),
-	formatter(std::move(formatter))
+	formatter(std::move(formatter)),
+	TextSink(policies)
 {
 }
 

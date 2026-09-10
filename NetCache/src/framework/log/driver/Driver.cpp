@@ -1,26 +1,15 @@
 #include "Driver.h"
 
-Driver::Driver(
-	std::string drivername,
-	std::vector<std::shared_ptr<Sink>> sinks,
-	std::vector<std::shared_ptr<Policy>> policies
-)
+Driver::Driver(std::string drivername, std::vector<std::shared_ptr<Sink>> sinks)
 	: drivername(std::move(drivername)),
-	sinks(sinks),
-	policies(policies)
+	sinks(sinks)
 {
 }
 
 void Driver::Submit(Entry &entry)
 {
-	for (auto &policy : policies)
-	{
-		if (!policy->Transform(entry))
-			return;
-	}
-
 	for (auto &sink : sinks)
-		sink->Write(entry);
+		sink->Emit(entry);
 }
 
 std::string &Driver::GetName()
@@ -28,22 +17,21 @@ std::string &Driver::GetName()
 	return drivername;
 }
 
-std::vector<std::string> Driver::GetSinkConfig() const
+std::vector<Driver::SinkConfig> Driver::GetSinkConfig() const
 {
-	std::vector<std::string> sinkcfg;
+	std::vector<Driver::SinkConfig> sinkcfg;
 
 	for (const auto &sink: sinks)
-		sinkcfg.push_back(sink->GetName());
+	{
+		Driver::SinkConfig config;
+
+		config.sink = sink->GetName();
+		
+		for (const auto &p : sink->GetPolicyConfig())
+			config.policies.push_back(p);
+
+		sinkcfg.push_back(config);
+	}
 
 	return sinkcfg;
-}
-
-std::vector<std::string> Driver::GetPolicyConfig() const
-{
-	std::vector<std::string> policycfg;
-
-	for (const auto &policy: policies)
-		policycfg.push_back(policy->GetName());
-
-	return policycfg;
 }

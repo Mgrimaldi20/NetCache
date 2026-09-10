@@ -67,7 +67,7 @@ target_sources(NetCache PRIVATE
 	"src/framework/log/Log.cpp"
 	"src/framework/log/driver/Driver.h"
 	"src/framework/log/driver/Driver.cpp"
-	"src/framework/log/entry/Entry.h"
+	
 	"src/framework/log/entry/EntryBuilder.h"
 	"src/framework/log/entry/EntryBuilderImpl.h"
 	"src/framework/log/entry/EntryBuilderImpl.cpp"
@@ -88,10 +88,9 @@ target_sources(NetCache PRIVATE
 	"src/framework/log/policy/trace/SourceLocationPolicy.h"
 	"src/framework/log/policy/trace/SourceLocationPolicy.cpp"
 
-	"src/application/Entry.h"
 	"src/application/KVStore.h"
 	"src/application/KVStore.cpp"
-)
+ "src/framework/log/sink/Sink.cpp" )
 
 message(STATUS "The full source include path is ${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_include_directories(NetCache PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")

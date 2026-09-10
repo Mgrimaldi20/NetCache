@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../entry/Entry.h"
+#include "framework/log/entry/Entry.h"
 
 /*
 * Class: Policy

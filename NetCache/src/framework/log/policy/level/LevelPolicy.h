@@ -1,9 +1,8 @@
 #ifndef __NETCACHE_FRAMEWORK_LOG_POLICY_LEVEL_LEVELPOLICY_H__
 #define __NETCACHE_FRAMEWORK_LOG_POLICY_LEVEL_LEVELPOLICY_H__
 
-#include "../../entry/Entry.h"
-
-#include "../Policy.h"
+#include "framework/log/entry/Entry.h"
+#include "framework/log/policy/Policy.h"
 
 /*
 * Class: LevelPolicy

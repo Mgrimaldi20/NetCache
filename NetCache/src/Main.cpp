@@ -34,19 +34,35 @@ int main(int argc, char **argv)
 		if (!ValidateOptions(argc, argv))
 			return 1;
 
+		std::shared_ptr<Policy> levelpolicy = std::make_shared<LevelPolicy>(Entry::Level::Debug);
+		std::shared_ptr<Policy> stracepolicy = std::make_shared<StacktracePolicy>(Entry::Level::Fatal);
+		std::shared_ptr<Policy> slpolicy = std::make_shared<SourceLocationPolicy>(Entry::Level::Debug);
+
 		std::shared_ptr<Log> log = std::make_shared<Log>(
 			"NetCache",
 			std::make_shared<Driver>(
 				"NetCacheMainLogDriver",
 				std::vector<std::shared_ptr<Sink>>
 				{
-					std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>())
-				},
-				std::vector<std::shared_ptr<Policy>>
-				{
-					std::make_shared<LevelPolicy>(Entry::Level::Debug),
-					std::make_shared<StacktracePolicy>(Entry::Level::Fatal),
-					std::make_shared<SourceLocationPolicy>(Entry::Level::Debug)
+					std::make_shared<ConsoleSink>(
+						std::make_unique<BasicTextFormatter>(),
+						std::vector<std::shared_ptr<Policy>>
+						{
+							levelpolicy,
+							stracepolicy,
+							slpolicy
+						}
+					),
+					std::make_shared<FileSink>(
+						"logs/NetCache.log",
+						std::make_unique<BasicTextFormatter>(),
+						std::vector<std::shared_ptr<Policy>>
+						{
+							levelpolicy,
+							stracepolicy,
+							slpolicy
+						}
+					)
 				}
 			)
 		);

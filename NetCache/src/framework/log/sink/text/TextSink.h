@@ -3,9 +3,8 @@
 
 #include <memory>
 
-#include "../../formatter/text/TextFormatter.h"
-
-#include "../Sink.h"
+#include "framework/log/formatter/text/TextFormatter.h"
+#include "framework/log/sink/Sink.h"
 
 /*
 * Class: Sink
@@ -20,15 +19,20 @@
 class TextSink : public Sink
 {
 public:
-	TextSink() = default;
+	TextSink(std::vector<std::shared_ptr<Policy>> policies = {})
+		: Sink(policies)
+	{
+	}
+
 	virtual ~TextSink() = default;
 
-	virtual void Write(const Entry &entry) = 0;
 	virtual void Flush() = 0;
-
 	virtual std::string &GetName() = 0;
 
 	virtual void SetFormatter(std::unique_ptr<TextFormatter> fmtter) = 0;
+
+protected:
+	virtual void Write(const Entry &entry) = 0;
 };
 
 #endif

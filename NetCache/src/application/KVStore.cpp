@@ -15,30 +15,39 @@ KVStore::~KVStore()
 
 std::optional<std::string> KVStore::Get(std::string_view key)
 {
-	return std::optional<std::string>();
-}
+	std::shared_lock lock(mtx);
 
-std::optional<std::string> KVStore::Get(std::initializer_list<std::string_view> keys)
-{
-	return std::optional<std::string>();
+	auto it = kvstore.find(key);
+
+	if (it == kvstore.end())
+	{
+		log->Warn("Key: \"{}\" not found in KVStore", key);
+		return std::nullopt;
+	}
+
+	return it->second.value;
 }
 
 bool KVStore::Set(std::string_view key, std::string_view value)
 {
-	return false;
-}
+	std::unique_lock lock(mtx);
 
-bool KVStore::Set(std::initializer_list<std::pair<std::string_view, std::string_view>> elems)
-{
-	return false;
+	try
+	{
+		kvstore.insert_or_assign(std::string(key), KVStore::Entry { .value = std::string(value) });
+	}
+
+	catch (...)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 bool KVStore::Del(std::string_view key)
 {
-	return false;
-}
+	std::unique_lock lock(mtx);
 
-bool KVStore::Del(std::initializer_list<std::string_view> keys)
-{
-	return false;
+	return kvstore.erase(key) > 0;
 }

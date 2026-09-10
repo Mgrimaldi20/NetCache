@@ -1,7 +1,7 @@
 #ifndef __NETCACHE_FRAMEWORK_LOG_SINK_TEXT_CONSOLE_CONSOLESINK_H__
 #define __NETCACHE_FRAMEWORK_LOG_SINK_TEXT_CONSOLE_CONSOLESINK_H__
 
-#include "../TextSink.h"
+#include "framework/log/sink/text/TextSink.h"
 
 /*
 * Class: ConsoleSink
@@ -15,15 +15,16 @@
 class ConsoleSink : public TextSink
 {
 public:
-	ConsoleSink(std::unique_ptr<TextFormatter> formatter = {});
+	ConsoleSink(std::unique_ptr<TextFormatter> formatter = {}, std::vector<std::shared_ptr<Policy>> policies = {});
 	virtual ~ConsoleSink() = default;
 
-	void Write(const Entry &entry) override final;
 	void Flush() override final;
-
 	std::string &GetName() override final;
 
 	void SetFormatter(std::unique_ptr<TextFormatter> fmtter) override final;
+
+protected:
+	void Write(const Entry &entry) override final;
 
 private:
 	std::string sinkname;

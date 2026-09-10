@@ -5,9 +5,8 @@
 #include <vector>
 #include <string>
 
-#include "../sink/Sink.h"
-#include "../policy/Policy.h"
-#include "../entry/Entry.h"
+#include "framework/log/sink/Sink.h"
+#include "framework/log/entry/Entry.h"
 
 /*
 * Class: Driver
@@ -22,26 +21,25 @@
 class Driver
 {
 public:
-	Driver(
-		std::string drivername = {},
-		std::vector<std::shared_ptr<Sink>> sinks = {},
-		std::vector<std::shared_ptr<Policy>> policies = {}
-	);
+	struct SinkConfig
+	{
+		std::string sink;
+		std::vector<std::string> policies;
+	};
 
+	Driver(std::string drivername = {}, std::vector<std::shared_ptr<Sink>> sinks = {});
 	~Driver() = default;
 
 	void Submit(Entry &entry);
 
 	std::string &GetName();
 
-	std::vector<std::string> GetSinkConfig() const;
-	std::vector<std::string> GetPolicyConfig() const;
+	std::vector<Driver::SinkConfig> GetSinkConfig() const;
 
 private:
 	std::string drivername;
 
 	std::vector<std::shared_ptr<Sink>> sinks;
-	std::vector<std::shared_ptr<Policy>> policies;
 };
 
 #endif

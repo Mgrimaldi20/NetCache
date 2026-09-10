@@ -11,11 +11,13 @@ Log::Log(std::string logname, std::shared_ptr<Driver> driver)
 {
 	Info("Attached new driver: {}", driver->GetName());
 
-	for (const auto &sinkname : driver->GetSinkConfig())
-		Info("Attached sink: {}", sinkname);
+	for (const auto &sink : driver->GetSinkConfig())
+	{
+		Info("Attached sink: {}", sink.sink);
 
-	for (const auto &policyname : driver->GetPolicyConfig())
-		Info("Attached policy: {}", policyname);
+		for (const auto &policy : sink.policies)
+			Info("\t- Attached policy: {}", policy);
+	}
 
 	Info("Logger started: {}", this->logname);
 }

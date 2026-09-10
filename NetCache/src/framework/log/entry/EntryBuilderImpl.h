@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "../driver/Driver.h"
+#include "framework/log/driver/Driver.h"
 
 #include "EntryBuilder.h"
 #include "Entry.h"
