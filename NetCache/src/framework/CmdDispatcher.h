@@ -38,9 +38,6 @@ public:
 	void Register(const std::string &cmdid, CmdHandlerFn fn);
 	void Register(std::initializer_list<std::pair<std::string, CmdHandlerFn>> elems);
 
-	template<typename ...Args>
-	void Register(Args && ...args);
-
 	CmdHandlerRetType Dispatch(const Parser::ParsedCmd &parsedcmd);
 
 private:
@@ -48,12 +45,5 @@ private:
 
 	std::shared_ptr<Log> log;
 };
-
-template<typename ...Args>
-inline void CmdDispatcher::Register(Args && ...args)
-{
-	static_assert(sizeof...(Args) % 2 == 0, "Register requires an even number of arguments!");
-	Register({ { std::forward<Args>(args)... } });
-}
 
 #endif

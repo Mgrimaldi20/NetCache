@@ -21,6 +21,8 @@
 #include "framework/log/policy/trace/StacktracePolicy.h"
 #include "framework/log/policy/trace/SourceLocationPolicy.h"
 
+#include "application/KVStore.h"
+
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
 static asio::ip::port_type serverport = NET_DEFAULT_PORT;
@@ -67,14 +69,48 @@ int main(int argc, char **argv)
 			)
 		);
 
+		std::shared_ptr<KVStore> kvstore = std::make_shared<KVStore>(log);
+
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 
 		// TODO: Register commands here within the system
 		dispatcher->Register(
-			"\x1",
-			[&](const Parser::PayloadType &pl) -> CmdDispatcher::CmdHandlerRetType
 			{
-				return std::string(pl[1]);
+				{
+					"\x1",
+					[&](const Parser::PayloadType &pl) -> CmdDispatcher::CmdHandlerRetType
+					{
+						CmdDispatcher::CmdHandlerRetType ret = kvstore->Get(pl[0]);
+						if (!ret)
+							return std::format("Key: [{}] was not found", pl[0]);
+
+						return ret;
+					}
+				},
+				{
+					"\x2",
+					[&](const Parser::PayloadType &pl)->CmdDispatcher::CmdHandlerRetType
+					{
+						bool res = kvstore->Set(pl[0], pl[1]);
+
+						if (res)
+							return std::format("Successfully inserted value: [{}] int key: [{}]", pl[0], pl[1]);
+
+						return std::format("Failed to insert value: [{}] into key: [{}]", pl[0], pl[1]);
+					}
+				},
+				{
+					"\x3",
+					[&](const Parser::PayloadType &pl)->CmdDispatcher::CmdHandlerRetType
+					{
+						bool res = kvstore->Del(pl[0]);
+
+						if (res)
+							return std::format("Successfully deleted key: [{}]", pl[0]);
+
+						return std::format("Failed to delete key: [{}]", pl[0]);
+					}
+				}
 			}
 		);
 
@@ -86,7 +122,7 @@ int main(int argc, char **argv)
 		Server server(ioctx, serverport, log, dispatcher);
 
 		log->Info("Started NetCache");
-
+		
 		ioctx.run();
 
 		log->Info("NetCache server is exiting...");

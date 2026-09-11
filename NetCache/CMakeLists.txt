@@ -44,6 +44,9 @@ endif()
 target_sources(NetCache PRIVATE
 	"src/Main.cpp"
 
+	"src/application/KVStore.h"
+	"src/application/KVStore.cpp"
+
 	"src/network/Asio.h"
 	"src/network/Asio.cpp"
 	"src/network/Server.h"
@@ -67,11 +70,11 @@ target_sources(NetCache PRIVATE
 	"src/framework/log/Log.cpp"
 	"src/framework/log/driver/Driver.h"
 	"src/framework/log/driver/Driver.cpp"
-	
 	"src/framework/log/entry/EntryBuilder.h"
 	"src/framework/log/entry/EntryBuilderImpl.h"
 	"src/framework/log/entry/EntryBuilderImpl.cpp"
 	"src/framework/log/sink/Sink.h"
+	"src/framework/log/sink/Sink.cpp"
 	"src/framework/log/sink/text/TextSink.h"
 	"src/framework/log/sink/text/file/FileSink.h"
 	"src/framework/log/sink/text/file/FileSink.cpp"
@@ -87,10 +90,7 @@ target_sources(NetCache PRIVATE
 	"src/framework/log/policy/trace/StacktracePolicy.cpp"
 	"src/framework/log/policy/trace/SourceLocationPolicy.h"
 	"src/framework/log/policy/trace/SourceLocationPolicy.cpp"
-
-	"src/application/KVStore.h"
-	"src/application/KVStore.cpp"
- "src/framework/log/sink/Sink.cpp" )
+)
 
 message(STATUS "The full source include path is ${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_include_directories(NetCache PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
