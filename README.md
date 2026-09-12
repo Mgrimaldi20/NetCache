@@ -31,6 +31,7 @@ NetCache makes use of Overlapped I/O and IOCP on Windows, and io_uring on Linux,
 
 | Command | Value | Description |
 | :--- | :--- | :--- |
+| **RES** | `0x00` | Reserved command, should not be used |
 | **GET** | `0x01` | Request a cached value |
 | **SET** | `0x02` | Store or update a cached value |
 | **DEL** | `0x03` | Remove a key from the cache |
