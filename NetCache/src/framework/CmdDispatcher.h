@@ -4,6 +4,7 @@
 #include <memory>
 #include <functional>
 #include <string>
+#include <vector>
 #include <utility>
 #include <unordered_map>
 #include <optional>
@@ -29,7 +30,7 @@ class CmdDispatcher
 {
 public:
 	using CmdHandlerRetType = std::optional<std::string>;
-	using CmdHandlerFn = std::move_only_function<CmdHandlerRetType(const Parser::PayloadType &)>;
+	using CmdHandlerFn = std::function<CmdHandlerRetType(const Parser::PayloadType &)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();

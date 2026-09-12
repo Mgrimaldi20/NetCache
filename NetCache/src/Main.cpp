@@ -79,9 +79,9 @@ int main(int argc, char **argv)
 		dispatcher->Register(
 			std::vector<std::pair<std::string, CmdDispatcher::CmdHandlerFn>>
 			{
-				{ "\x1", std::bind_front(&Cmd::operator(), std::make_unique<GetCmd>(kvstore)) },
-				{ "\x2", std::bind_front(&Cmd::operator(), std::make_unique<SetCmd>(kvstore)) },
-				{ "\x3", std::bind_front(&Cmd::operator(), std::make_unique<DelCmd>(kvstore)) }
+				{ "\x1", std::bind_front(&Cmd::operator(), std::make_shared<GetCmd>(kvstore)) },
+				{ "\x2", std::bind_front(&Cmd::operator(), std::make_shared<SetCmd>(kvstore)) },
+				{ "\x3", std::bind_front(&Cmd::operator(), std::make_shared<DelCmd>(kvstore)) }
 			}
 		);
 
