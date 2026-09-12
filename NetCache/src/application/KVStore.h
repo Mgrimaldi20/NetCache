@@ -15,6 +15,13 @@
 class KVStore
 {
 public:
+	enum class SetResult
+	{
+		Inserted,
+		Updated,
+		Error
+	};
+
 	struct Entry
 	{
 		std::string value;
@@ -24,7 +31,7 @@ public:
 	~KVStore();
 
 	std::optional<std::string> Get(std::string_view key);
-	bool Set(std::string_view key, std::string_view value);
+	KVStore::SetResult Set(std::string_view key, std::string_view value);
 	bool Del(std::string_view key);
 
 private:

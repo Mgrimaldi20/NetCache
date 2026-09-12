@@ -19,7 +19,7 @@ public:
 	void Feed(std::string_view data, FrameCallbackFn cbfn) override final;
 
 private:
-	static constexpr std::string_view NC_MAGIC = "NC";
+	static constexpr std::string_view NC_PROTO_NAME = "NC";
 	static constexpr std::uint8_t NC_VERSION = 1;
 	static constexpr std::size_t NC_HEADER_SIZE = 7;
 	static constexpr std::size_t NC_MAX_FRAME_SIZE = 64 * 1204 * 1024;

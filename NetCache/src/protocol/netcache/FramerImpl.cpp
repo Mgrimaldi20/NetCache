@@ -99,8 +99,17 @@ std::size_t FramerImpl::GetFrameSize(std::string_view data)
 	if (data.size() < NC_HEADER_SIZE)
 		throw std::runtime_error("Insufficient data to read NC frame header");
 
-	if (data[0] != NC_MAGIC[0] || data[1] != NC_MAGIC[1])
-		throw std::runtime_error(std::format("Invalid magic, expected: {}, got: {}{}", NC_MAGIC, data[0], data[1]));
+	if (data[0] != NC_PROTO_NAME[0] || data[1] != NC_PROTO_NAME[1])
+	{
+		throw std::runtime_error(
+			std::format(
+				"Invalid magic, expected: {}, got: {}{}",
+				NC_PROTO_NAME,
+				data[0],
+				data[1]
+			)
+		);
+	}
 
 	std::uint8_t version = static_cast<std::uint8_t>(data[2]);
 	if (version != NC_VERSION)

@@ -28,21 +28,30 @@ std::optional<std::string> KVStore::Get(std::string_view key)
 	return it->second.value;
 }
 
-bool KVStore::Set(std::string_view key, std::string_view value)
+KVStore::SetResult KVStore::Set(std::string_view key, std::string_view value)
 {
 	std::unique_lock lock(mtx);
 
 	try
 	{
-		kvstore.insert_or_assign(std::string(key), KVStore::Entry { .value = std::string(value) });
+		auto [it, inserted] = kvstore.insert_or_assign(
+			std::string(key),
+			KVStore::Entry
+			{
+				.value = std::string(value)
+			}
+		);
+
+		if (inserted)
+			return KVStore::SetResult::Inserted;
+
+		return KVStore::SetResult::Updated;
 	}
 
 	catch (...)
 	{
-		return false;
+		return KVStore::SetResult::Error;
 	}
-
-	return true;
 }
 
 bool KVStore::Del(std::string_view key)

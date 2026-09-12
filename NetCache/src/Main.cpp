@@ -22,6 +22,9 @@
 #include "framework/log/policy/trace/SourceLocationPolicy.h"
 
 #include "application/KVStore.h"
+#include "application/cmd/handlers/GetCmd.h"
+#include "application/cmd/handlers/SetCmd.h"
+#include "application/cmd/handlers/DelCmd.h"
 
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
@@ -78,7 +81,7 @@ int main(int argc, char **argv)
 			{
 				{
 					"\x1",
-					[&](const Parser::PayloadType &pl) -> CmdDispatcher::CmdHandlerRetType
+					[&kvstore](const Parser::PayloadType &pl) -> CmdDispatcher::CmdHandlerRetType
 					{
 						CmdDispatcher::CmdHandlerRetType ret = kvstore->Get(pl[0]);
 						if (!ret)
@@ -89,19 +92,22 @@ int main(int argc, char **argv)
 				},
 				{
 					"\x2",
-					[&](const Parser::PayloadType &pl)->CmdDispatcher::CmdHandlerRetType
+					[&kvstore](const Parser::PayloadType &pl)->CmdDispatcher::CmdHandlerRetType
 					{
-						bool res = kvstore->Set(pl[0], pl[1]);
+						KVStore::SetResult res = kvstore->Set(pl[0], pl[1]);
 
-						if (res)
-							return std::format("Successfully inserted value: [{}] int key: [{}]", pl[0], pl[1]);
+						if (res == KVStore::SetResult::Inserted)
+							return std::format("Successfully inserted value: [{}] into key: [{}]", pl[0], pl[1]);
+
+						if (res == KVStore::SetResult::Updated)
+							return std::format("Successfully updated to value: [{}] for key: [{}]", pl[0], pl[1]);
 
 						return std::format("Failed to insert value: [{}] into key: [{}]", pl[0], pl[1]);
 					}
 				},
 				{
 					"\x3",
-					[&](const Parser::PayloadType &pl)->CmdDispatcher::CmdHandlerRetType
+					[&kvstore](const Parser::PayloadType &pl)->CmdDispatcher::CmdHandlerRetType
 					{
 						bool res = kvstore->Del(pl[0]);
 

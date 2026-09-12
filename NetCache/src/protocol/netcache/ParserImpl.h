@@ -18,7 +18,6 @@ public:
 private:
 	static constexpr std::size_t NC_HEADER_SIZE = 7;
 	static constexpr std::size_t NC_COMMAND_SIZE = 1;
-
 	static constexpr std::size_t NC_MAX_ARGS = 256;
 
 	std::uint32_t ReadUInt32(std::string_view data);

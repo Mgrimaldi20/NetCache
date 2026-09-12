@@ -97,7 +97,7 @@ asio::awaitable<void> Session::Reader()
 				std::optional<std::string> res = std::move(dispatcher->Dispatch(parsedcmd));
 
 				if (res)
-					Send(*res);
+					Send(std::move(*res));
 			});
 		}
 	}

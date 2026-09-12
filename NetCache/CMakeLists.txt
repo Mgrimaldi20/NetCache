@@ -46,6 +46,13 @@ target_sources(NetCache PRIVATE
 
 	"src/application/KVStore.h"
 	"src/application/KVStore.cpp"
+	"src/application/cmd/Cmd.h"
+	"src/application/cmd/handlers/GetCmd.h"
+	"src/application/cmd/handlers/GetCmd.cpp"
+	"src/application/cmd/handlers/SetCmd.h"
+	"src/application/cmd/handlers/SetCmd.cpp"
+	"src/application/cmd/handlers/DelCmd.h"
+	"src/application/cmd/handlers/DelCmd.cpp"
 
 	"src/network/Asio.h"
 	"src/network/Asio.cpp"
