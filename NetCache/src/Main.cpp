@@ -6,6 +6,7 @@
 #include <memory>
 #include <exception>
 #include <vector>
+#include <functional>
 
 #include "network/Asio.h"
 #include "network/Server.h"
@@ -73,50 +74,14 @@ int main(int argc, char **argv)
 		);
 
 		std::shared_ptr<KVStore> kvstore = std::make_shared<KVStore>(log);
-
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 
-		// TODO: Register commands here within the system
 		dispatcher->Register(
+			std::vector<std::pair<std::string, CmdDispatcher::CmdHandlerFn>>
 			{
-				{
-					"\x1",
-					[&kvstore](const Parser::PayloadType &pl) -> CmdDispatcher::CmdHandlerRetType
-					{
-						CmdDispatcher::CmdHandlerRetType ret = kvstore->Get(pl[0]);
-						if (!ret)
-							return std::format("Key: [{}] was not found", pl[0]);
-
-						return ret;
-					}
-				},
-				{
-					"\x2",
-					[&kvstore](const Parser::PayloadType &pl)->CmdDispatcher::CmdHandlerRetType
-					{
-						KVStore::SetResult res = kvstore->Set(pl[0], pl[1]);
-
-						if (res == KVStore::SetResult::Inserted)
-							return std::format("Successfully inserted value: [{}] into key: [{}]", pl[0], pl[1]);
-
-						if (res == KVStore::SetResult::Updated)
-							return std::format("Successfully updated to value: [{}] for key: [{}]", pl[0], pl[1]);
-
-						return std::format("Failed to insert value: [{}] into key: [{}]", pl[0], pl[1]);
-					}
-				},
-				{
-					"\x3",
-					[&kvstore](const Parser::PayloadType &pl)->CmdDispatcher::CmdHandlerRetType
-					{
-						bool res = kvstore->Del(pl[0]);
-
-						if (res)
-							return std::format("Successfully deleted key: [{}]", pl[0]);
-
-						return std::format("Failed to delete key: [{}]", pl[0]);
-					}
-				}
+				{ "\x1", [cmd = std::make_unique<GetCmd>(kvstore)](const auto &pl) { return (*cmd)(pl); } },
+				{ "\x2", [cmd = std::make_unique<SetCmd>(kvstore)](const auto &pl) { return (*cmd)(pl); } },
+				{ "\x3", [cmd = std::make_unique<DelCmd>(kvstore)](const auto &pl) { return (*cmd)(pl); } }
 			}
 		);
 

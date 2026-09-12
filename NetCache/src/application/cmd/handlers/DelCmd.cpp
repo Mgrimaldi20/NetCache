@@ -7,5 +7,10 @@ DelCmd::DelCmd(std::shared_ptr<KVStore> kvstore)
 
 CmdDispatcher::CmdHandlerRetType DelCmd::operator()(const Parser::PayloadType &pl)
 {
-	return CmdDispatcher::CmdHandlerRetType();
+	bool res = kvstore->Del(pl[0]);
+
+	if (res)
+		return std::format("Successfully deleted key: [{}]", pl[0]);
+
+	return std::format("Failed to delete key: [{}]", pl[0]);
 }

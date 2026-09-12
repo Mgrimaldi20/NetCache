@@ -9,8 +9,8 @@ add_executable(NetCache)
 
 project(NetCache LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 23)
-set_property(TARGET NetCache PROPERTY CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 26)
+set_property(TARGET NetCache PROPERTY CXX_STANDARD 26)
 
 # Set the NetCache version
 target_compile_definitions(NetCache PRIVATE NETCACHE_VERSION=1)
