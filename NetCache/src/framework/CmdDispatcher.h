@@ -35,7 +35,7 @@ public:
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
 
-	void Register(const std::string &cmdid, CmdHandlerFn fn);
+	void Register(const std::string &&cmdid, CmdHandlerFn &&fn);
 	void Register(std::vector<std::pair<std::string, CmdHandlerFn>> elems);
 
 	CmdHandlerRetType Dispatch(const Parser::ParsedCmd &parsedcmd);
