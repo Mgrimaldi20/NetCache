@@ -7,6 +7,10 @@
 #include <exception>
 #include <vector>
 #include <functional>
+#include <thread>
+#include <ranges>
+#include <condition_variable>
+#include <mutex>
 
 #include "network/Asio.h"
 #include "network/Server.h"
@@ -28,6 +32,7 @@
 #include "application/cmd/handlers/DelCmd.h"
 
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
+constexpr unsigned int NET_DEFAULT_THREADS = 2;
 
 static asio::ip::port_type serverport = NET_DEFAULT_PORT;
 
@@ -39,6 +44,10 @@ int main(int argc, char **argv)
 	{
 		if (!ValidateOptions(argc, argv))
 			return 1;
+
+		std::atomic<bool> endserver;
+		std::atomic<bool> restartserver;
+		std::condition_variable cleanupcv;
 
 		std::shared_ptr<Policy> levelpolicy = std::make_shared<LevelPolicy>(Entry::Level::Debug);
 		std::shared_ptr<Policy> stracepolicy = std::make_shared<StacktracePolicy>(Entry::Level::Fatal);
@@ -77,24 +86,52 @@ int main(int argc, char **argv)
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 
 		dispatcher->Register(
-			std::vector<std::pair<std::string, CmdDispatcher::CmdHandlerFn>>
-			{
-				{ "\x1", std::bind_front(&Cmd::operator(), std::make_shared<GetCmd>(kvstore)) },
-				{ "\x2", std::bind_front(&Cmd::operator(), std::make_shared<SetCmd>(kvstore)) },
-				{ "\x3", std::bind_front(&Cmd::operator(), std::make_shared<DelCmd>(kvstore)) }
-			}
+			std::pair { "\x1", std::bind_front(&Cmd::operator(), std::make_shared<GetCmd>(kvstore)) },
+			std::pair { "\x2", std::bind_front(&Cmd::operator(), std::make_shared<SetCmd>(kvstore)) },
+			std::pair { "\x3", std::bind_front(&Cmd::operator(), std::make_shared<DelCmd>(kvstore)) }
 		);
 
 		log->Info("Registered protocol commands in the CmdSystem");
 
-		// single thread hint
-		asio::io_context ioctx(1);
+		const unsigned int numthreads = []()
+		{
+			auto count = std::thread::hardware_concurrency() * 2;
+			return (count == 0) ? NET_DEFAULT_THREADS : count;
+		}();
+
+		if (numthreads == NET_DEFAULT_THREADS)
+		{
+			log->Warn(
+				"The number of threads avaliable is equal to the default number [{}]. "
+				"If this is not correct, you may wish to restart NetCache as the correct number of system threads ",
+				"have not been detected. If this is correct, then you may ignore this warning",
+				NET_DEFAULT_THREADS
+			);
+		}
+
+		asio::io_context ioctx;
 
 		Server server(ioctx, serverport, log, dispatcher);
 
 		log->Info("Started NetCache");
 		
 		ioctx.run();
+
+		/*auto threads = std::views::repeat(0, numthreads)
+			| std::views::transform([&ioctx](auto)
+			{
+				return std::jthread([&ioctx]()
+				{
+					ioctx.run();
+				});
+			})
+			| std::ranges::to<std::vector>();*/
+
+		{
+			std::mutex cvmtx;
+			std::unique_lock lock(cvmtx);
+			cleanupcv.wait(lock, [&endserver]() { return endserver.load(); });
+		}
 
 		log->Info("NetCache server is exiting...");
 	}

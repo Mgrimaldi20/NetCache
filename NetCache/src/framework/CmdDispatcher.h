@@ -17,6 +17,16 @@
 #include "StringHash.h"
 #include "log/Log.h"
 
+namespace
+{
+	template<typename T>
+	concept IsPair = requires (T t)
+	{
+		t.first;
+		t.second;
+	};
+}
+
 /*
 * Class: CmdDispatcher
 * Responsible for registering user defined commands, and dispatching/calling parsed commands.
@@ -30,13 +40,17 @@ class CmdDispatcher
 {
 public:
 	using CmdHandlerRetType = std::optional<std::string>;
-	using CmdHandlerFn = std::function<CmdHandlerRetType(const Parser::PayloadType &)>;
+	using CmdHandlerFn = std::move_only_function<CmdHandlerRetType(const Parser::PayloadType &)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
 
-	void Register(const std::string &&cmdid, CmdHandlerFn &&fn);
+	CmdDispatcher &Register(std::string cmdid, CmdHandlerFn fn);
 	void Register(std::vector<std::pair<std::string, CmdHandlerFn>> elems);
+
+	template<typename ...Pairs>
+		requires(IsPair<Pairs> && ...)
+	void Register(Pairs && ...pairs);
 
 	CmdHandlerRetType Dispatch(const Parser::ParsedCmd &parsedcmd);
 
@@ -45,5 +59,12 @@ private:
 
 	std::shared_ptr<Log> log;
 };
+
+template<typename ...Pairs>
+	requires(IsPair<Pairs> && ...)
+inline void CmdDispatcher::Register(Pairs && ...pairs)
+{
+	(Register(std::forward<Pairs>(pairs).first, std::forward<Pairs>(pairs).second), ...);
+}
 
 #endif
