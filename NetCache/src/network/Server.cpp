@@ -11,11 +11,15 @@ Server::Server(
 	asio::io_context &ioctx,
 	asio::ip::port_type port,
 	std::shared_ptr<Log> log,
-	std::shared_ptr<CmdDispatcher> dispatcher
+	std::shared_ptr<CmdDispatcher> dispatcher,
+	std::atomic<bool> &endserver,
+	std::condition_variable &cleanupcv
 )
 	: ioctx(ioctx),
 	log(log),
 	dispatcher(dispatcher),
+	endserver(endserver),
+	cleanupcv(cleanupcv),
 	signals(ioctx, NET_SIGINT, NET_SIGTERM),
 	acceptor(ioctx, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
 {
@@ -104,4 +108,7 @@ void Server::Stop()
 
 	acceptor.cancel(ec);
 	acceptor.close(ec);
+
+	endserver.get().store(true);
+	cleanupcv.get().notify_all();
 }

@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 
 		asio::io_context ioctx;
 
-		Server server(ioctx, serverport, log, dispatcher);
+		Server server(ioctx, serverport, log, dispatcher, endserver, cleanupcv);
 
 		log->Info("Started NetCache");
 		

@@ -21,7 +21,9 @@ public:
 		asio::io_context &ioctx,
 		asio::ip::port_type port,
 		std::shared_ptr<Log> log,
-		std::shared_ptr<CmdDispatcher> dispatcher
+		std::shared_ptr<CmdDispatcher> dispatcher,
+		std::atomic<bool> &endserver,
+		std::condition_variable &cleanupcv
 	);
 
 	Server(const Server &) = delete;
@@ -42,6 +44,9 @@ private:
 	asio::ip::port_type port;
 	std::shared_ptr<Log> log;
 	std::shared_ptr<CmdDispatcher> dispatcher;
+
+	std::reference_wrapper<std::atomic<bool>> endserver;
+	std::reference_wrapper<std::condition_variable> cleanupcv;
 
 	asio::signal_set signals;
 	asio::ip::tcp::acceptor acceptor;
