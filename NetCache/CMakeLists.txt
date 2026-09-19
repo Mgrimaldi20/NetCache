@@ -68,6 +68,8 @@ target_sources(NetCache PRIVATE
 	"src/protocol/netcache/FramerImpl.cpp"
 	"src/protocol/netcache/ParserImpl.h"
 	"src/protocol/netcache/ParserImpl.cpp"
+	"src/protocol/netcache/Response.h"
+	"src/protocol/netcache/Response.cpp"
 
 	"src/framework/StringHash.h"
 	"src/framework/StringHash.cpp"
