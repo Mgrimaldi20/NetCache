@@ -12,6 +12,15 @@
 #include "framework/StringHash.h"
 #include "framework/log/Log.h"
 
+/*
+* Class: KVStore
+* The component that drives the whole application. The KV store which is the actual cache.
+* Currently backed by an unordered_map of Entry records
+*
+*	Get: Retireves a value from the cache for a given key
+*	Set: Sets a value for a given key
+*	Del: Deletes a KV pair for a given key
+*/
 class KVStore
 {
 public:

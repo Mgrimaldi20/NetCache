@@ -6,6 +6,12 @@
 #include "application/KVStore.h"
 #include "framework/CmdDispatcher.h"
 
+/*
+* Class: Cmd
+* An abstract representation of a command handler, keeps a pointer to a KVStore.
+*
+*	operator(): Calls the handler and returns a response for the specified command
+*/
 class Cmd
 {
 public:
