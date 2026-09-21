@@ -1,4 +1,6 @@
 #include <stdexcept>
+#include <memory>
+#include <bit>
 
 #include "ParserImpl.h"
 
@@ -43,19 +45,14 @@ Parser::ParsedCmd ParserImpl::Parse(std::string_view frame)
 	};
 }
 
-std::uint32_t ParserImpl::ReadUInt32(std::string_view data)
+std::uint32_t ParserImpl::ReadUInt32(std::string_view bytes)
 {
 	constexpr std::size_t UINT32_SIZE = sizeof(std::uint32_t);
 
-	if (data.size() < UINT32_SIZE)
+	if (bytes.size() < UINT32_SIZE)
 		throw std::runtime_error("Insufficient data for 32 bit integer read");
 
-	std::array<char, UINT32_SIZE> bytes;
-
-	for (std::size_t i=0; i<UINT32_SIZE; i++)
-		bytes[i] = data[i];
-
-	std::uint32_t value = std::bit_cast<std::uint32_t>(bytes);
+	std::uint32_t value = *std::start_lifetime_as<std::uint32_t>(bytes.data());
 
 	if constexpr (std::endian::native == std::endian::little)
 		value = std::byteswap(value);

@@ -4,13 +4,16 @@
 
 cmake_minimum_required(VERSION 3.25)
 
+project(NetCache LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Add source to this project's executable
 add_executable(NetCache)
 
-project(NetCache LANGUAGES CXX)
-
-set(CMAKE_CXX_STANDARD 26)
-set_property(TARGET NetCache PROPERTY CXX_STANDARD 26)
+set_property(TARGET NetCache PROPERTY CXX_STANDARD 23)
 
 # Set the NetCache version
 target_compile_definitions(NetCache PRIVATE NETCACHE_VERSION=1)

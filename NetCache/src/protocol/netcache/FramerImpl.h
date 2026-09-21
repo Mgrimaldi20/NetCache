@@ -24,7 +24,7 @@ private:
 	static constexpr std::size_t NC_HEADER_SIZE = 7;
 	static constexpr std::size_t NC_MAX_FRAME_SIZE = 64 * 1204 * 1024;
 
-	std::uint32_t ReadUInt32(std::string_view data);
+	static std::uint32_t ReadUInt32(std::string_view bytes);
 
 	std::size_t GetFrameSize(std::string_view data);
 

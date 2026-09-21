@@ -12,9 +12,6 @@
 #include <condition_variable>
 #include <mutex>
 
-#include "network/Asio.h"
-#include "network/Server.h"
-
 #include "framework/CmdDispatcher.h"
 #include "framework/log/Log.h"
 #include "framework/log/driver/Driver.h"
@@ -30,6 +27,9 @@
 #include "application/cmd/handlers/GetCmd.h"
 #include "application/cmd/handlers/SetCmd.h"
 #include "application/cmd/handlers/DelCmd.h"
+
+#include "network/Server.h"
+#include "network/Asio.h"
 
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 constexpr unsigned int NET_DEFAULT_THREADS = 2;

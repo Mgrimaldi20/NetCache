@@ -4,10 +4,10 @@
 #include <memory>
 #include <functional>
 
-#include "Asio.h"
-
 #include "framework/CmdDispatcher.h"
 #include "framework/log/Log.h"
+
+#include "Asio.h"
 
 /*
 * Class: Server
