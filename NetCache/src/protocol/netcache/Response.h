@@ -10,16 +10,15 @@
 namespace
 {
 	template<typename T>
-	using UnderlyingOrSelf = std::conditional_t<std::is_enum_v<T>, std::underlying_type_t<T>, T>;
+	concept ValidUIntType =
+		std::same_as<T, uint8_t> ||
+		std::same_as<T, uint16_t> ||
+		std::same_as<T, uint32_t> ||
+		std::same_as<T, uint64_t>;
 
 	template<typename T>
-	concept ValidUIntType = []<typename U = UnderlyingOrSelf<T>>()
-	{
-		return std::same_as<T, uint8_t>
-			|| std::same_as<T, uint16_t>
-			|| std::same_as<T, uint32_t>
-			|| std::same_as<T, uint64_t>;
-	}();
+	concept ValidUIntUnderlyingType = std::is_enum_v<T>
+		&& ValidUIntType<std::underlying_type_t<T>>;
 }
 
 class Response
@@ -57,7 +56,10 @@ public:
 
 private:
 	template<ValidUIntType T>
-	static void WriteUInt(std::string &buffer, const T value);
+	static void WriteUInt(std::string &buffer, T value);
+
+	template<ValidUIntUnderlyingType T>
+	static void WriteUInt(std::string &buffer, T value);
 
 	std::string protoname;
 	std::uint8_t version;
@@ -67,22 +69,26 @@ private:
 };
 
 template<ValidUIntType T>
-inline void Response::WriteUInt(std::string &buffer, const T value)
+inline void Response::WriteUInt(std::string &buffer, T value)
 {
-	auto rawval = static_cast<UnderlyingOrSelf<T>>(value);
+	constexpr std::size_t VAL_SIZE = sizeof(value);
 
-	constexpr std::size_t RV_SIZE = sizeof(rawval);
-
-	if constexpr (RV_SIZE > 1 && std::endian::native == std::endian::little)
-		rawval = std::byteswap(rawval);
+	if constexpr (VAL_SIZE > 1 && std::endian::native == std::endian::little)
+		value = std::byteswap(value);
 
 	const std::size_t oldsize = buffer.size();
 
-	buffer.resize_and_overwrite(oldsize + RV_SIZE, [&](char *buf, std::size_t count)
+	buffer.resize_and_overwrite(oldsize + VAL_SIZE, [&](char *buf, std::size_t count)
 	{
-		*reinterpret_cast<decltype(rawval) *>(buf + oldsize) = rawval;
+		std::construct_at(reinterpret_cast<decltype(value) *>(buf + oldsize), value);
 		return count;
 	});
+}
+
+template<ValidUIntUnderlyingType T>
+inline void Response::WriteUInt(std::string &buffer, T value)
+{
+	return WriteUInt<std::underlying_type_t<T>>(buffer, static_cast<std::underlying_type_t<T>>(value));
 }
 
 #endif

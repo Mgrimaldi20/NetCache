@@ -62,5 +62,23 @@ Response &&Response::Payload(std::string pl) &&
 
 std::string Response::Build() &&
 {
-	return std::string();
+	std::size_t msglen =
+		protoname.length() +
+		sizeof(version) +
+		sizeof(remaininglen) +
+		sizeof(status) +
+		payload.length();
+
+	std::string message;
+	message.reserve(msglen);
+
+	message += std::move(protoname);
+
+	WriteUInt(message, version);
+	WriteUInt(message, remaininglen);
+	WriteUInt(message, status);
+
+	message += std::move(payload);
+
+	return message;
 }
