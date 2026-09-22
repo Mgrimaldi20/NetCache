@@ -12,6 +12,7 @@
 * Struct: Entry
 * Represents a log entry, contains most information needed for enough context.
 * Contains a Level enum class to set the severity level of the log.
+* Log name is a pointer to the actual loggers name, safe as the Log outlives the Entry it creates.
 * 
 *	GetLevelStr: Takes in an entry level enum and returns a string representation
 */
@@ -35,7 +36,7 @@ struct Entry
 	virtual std::string_view GetLevelStr(Entry::Level entrylevel) const = 0;
 
 	std::chrono::system_clock::time_point timestamp;
-	std::string logname;
+	std::string_view logname;
 	Entry::Level entrylevel;
 	std::string message;
 	std::optional<std::source_location> location;

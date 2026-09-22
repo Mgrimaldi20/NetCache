@@ -36,7 +36,7 @@ public:
 
 	virtual ~EntryBuilderImpl();
 
-	EntryBuilder &Name(std::string name) override final;
+	EntryBuilder &Name(std::string_view name) override final;
 	EntryBuilder &Level(Entry::Level level) override final;
 	EntryBuilder &Message(std::string msg) override final;
 

@@ -20,7 +20,7 @@ public:
 	EntryBuilder() = default;
 	virtual ~EntryBuilder() = default;
 
-	virtual EntryBuilder &Name(std::string name) = 0;
+	virtual EntryBuilder &Name(std::string_view name) = 0;
 	virtual EntryBuilder &Level(Entry::Level level) = 0;
 	virtual EntryBuilder &Message(std::string msg) = 0;
 

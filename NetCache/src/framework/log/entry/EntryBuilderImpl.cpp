@@ -17,7 +17,7 @@ EntryBuilderImpl::~EntryBuilderImpl()
 		dest->Submit(*this);
 }
 
-EntryBuilder &EntryBuilderImpl::Name(std::string name)
+EntryBuilder &EntryBuilderImpl::Name(std::string_view name)
 {
 	logname = name;
 	return *this;
