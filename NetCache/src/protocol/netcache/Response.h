@@ -88,7 +88,7 @@ inline void Response::WriteUInt(std::string &buffer, T value)
 template<ValidUIntUnderlyingType T>
 inline void Response::WriteUInt(std::string &buffer, T value)
 {
-	return WriteUInt<std::underlying_type_t<T>>(buffer, static_cast<std::underlying_type_t<T>>(value));
+	return WriteUInt(buffer, static_cast<std::underlying_type_t<T>>(value));
 }
 
 #endif

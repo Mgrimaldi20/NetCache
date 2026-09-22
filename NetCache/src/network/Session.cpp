@@ -129,7 +129,12 @@ asio::awaitable<void> Session::Writer()
 
 			co_await asio::async_write(socket, asio::buffer(message), asio::use_awaitable);
 
-			log->Debug("Wrote message to Client {}: [{} bytes] :: {}", clientaddr, message.size(), message);
+			log->Debug(
+				"Wrote message to Client {}: [{} bytes] :: {}",
+				clientaddr,
+				message.size(),
+				std::span<char>(message).subspan(0, message.size())
+			);
 		}
 	}
 

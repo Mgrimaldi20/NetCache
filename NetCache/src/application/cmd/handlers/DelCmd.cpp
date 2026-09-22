@@ -1,3 +1,5 @@
+#include "protocol/netcache/Response.h"
+
 #include "DelCmd.h"
 
 DelCmd::DelCmd(std::shared_ptr<KVStore> kvstore)
@@ -9,8 +11,20 @@ CmdDispatcher::CmdHandlerRetType DelCmd::operator()(const Parser::PayloadType &p
 {
 	bool res = kvstore->Del(pl[0]);
 
-	if (res)
-		return std::format("Successfully deleted key: [{}]", pl[0]);
+	if (!res)
+	{
+		return Response()
+			.ProtocolName("NC")
+			.Version(1)
+			.RemainingLength(sizeof(Response::StatusCode))
+			.Status(Response::StatusCode::InternalError)
+			.Build();
+	}
 
-	return std::format("Failed to delete key: [{}]", pl[0]);
+	return Response()
+		.ProtocolName("NC")
+		.Version(1)
+		.RemainingLength(sizeof(Response::StatusCode))
+		.Status(Response::StatusCode::Ok)
+		.Build();
 }
