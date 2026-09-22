@@ -20,13 +20,23 @@ public:
 	EntryBuilder() = default;
 	virtual ~EntryBuilder() = default;
 
-	virtual EntryBuilder &Name(std::string_view name) = 0;
-	virtual EntryBuilder &Level(Entry::Level level) = 0;
-	virtual EntryBuilder &Message(std::string msg) = 0;
+	virtual EntryBuilder &Name(std::string_view name) & = 0;
+	virtual EntryBuilder &&Name(std::string_view name) && = 0;
 
-	virtual EntryBuilder &Timestamp(std::chrono::system_clock::time_point time) = 0;
-	virtual EntryBuilder &SourceLocation(std::source_location srcloc) = 0;
-	virtual EntryBuilder &Stacktrace(std::stacktrace trace) = 0;
+	virtual EntryBuilder &Level(Entry::Level level) & = 0;
+	virtual EntryBuilder &&Level(Entry::Level level) && = 0;
+
+	virtual EntryBuilder &Message(std::string msg) & = 0;
+	virtual EntryBuilder &&Message(std::string msg) && = 0;
+
+	virtual EntryBuilder &Timestamp(std::chrono::system_clock::time_point time) & = 0;
+	virtual EntryBuilder &&Timestamp(std::chrono::system_clock::time_point time) && = 0;
+
+	virtual EntryBuilder &SourceLocation(std::source_location srcloc) & = 0;
+	virtual EntryBuilder &&SourceLocation(std::source_location srcloc) && = 0;
+
+	virtual EntryBuilder &Stacktrace(std::stacktrace trace) & = 0;
+	virtual EntryBuilder &&Stacktrace(std::stacktrace trace) && = 0;
 };
 
 #endif

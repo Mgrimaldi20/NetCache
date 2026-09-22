@@ -17,40 +17,76 @@ EntryBuilderImpl::~EntryBuilderImpl()
 		dest->Submit(*this);
 }
 
-EntryBuilder &EntryBuilderImpl::Name(std::string_view name)
+EntryBuilder &EntryBuilderImpl::Name(std::string_view name) &
 {
 	logname = name;
 	return *this;
 }
 
-EntryBuilder &EntryBuilderImpl::Level(Entry::Level level)
+EntryBuilder &&EntryBuilderImpl::Name(std::string_view name) &&
+{
+	logname = name;
+	return std::move(*this);
+}
+
+EntryBuilder &EntryBuilderImpl::Level(Entry::Level level) &
 {
 	entrylevel = level;
 	return *this;
 }
 
-EntryBuilder &EntryBuilderImpl::Message(std::string msg)
+EntryBuilder &&EntryBuilderImpl::Level(Entry::Level level) &&
+{
+	entrylevel = level;
+	return std::move(*this);
+}
+
+EntryBuilder &EntryBuilderImpl::Message(std::string msg) &
 {
 	message = std::move(msg);
 	return *this;
 }
 
-EntryBuilder &EntryBuilderImpl::Timestamp(std::chrono::system_clock::time_point time)
+EntryBuilder &&EntryBuilderImpl::Message(std::string msg) &&
+{
+	message = std::move(msg);
+	return std::move(*this);
+}
+
+EntryBuilder &EntryBuilderImpl::Timestamp(std::chrono::system_clock::time_point time) &
 {
 	timestamp = time;
 	return *this;
 }
 
-EntryBuilder &EntryBuilderImpl::SourceLocation(std::source_location srcloc)
+EntryBuilder &&EntryBuilderImpl::Timestamp(std::chrono::system_clock::time_point time) &&
+{
+	timestamp = time;
+	return std::move(*this);
+}
+
+EntryBuilder &EntryBuilderImpl::SourceLocation(std::source_location srcloc) &
 {
 	location = srcloc;
 	return *this;
 }
 
-EntryBuilder &EntryBuilderImpl::Stacktrace(std::stacktrace trace)
+EntryBuilder &&EntryBuilderImpl::SourceLocation(std::source_location srcloc) &&
+{
+	location = srcloc;
+	return std::move(*this);
+}
+
+EntryBuilder &EntryBuilderImpl::Stacktrace(std::stacktrace trace) &
 {
 	stacktrace = trace;
 	return *this;
+}
+
+EntryBuilder &&EntryBuilderImpl::Stacktrace(std::stacktrace trace) &&
+{
+	stacktrace = trace;
+	return std::move(*this);
 }
 
 std::string_view EntryBuilderImpl::GetLevelStr(Entry::Level level) const

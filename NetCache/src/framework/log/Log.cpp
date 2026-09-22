@@ -27,7 +27,7 @@ Log::~Log()
 	Info("Shutting down the Logger: {}", logname);
 }
 
-EntryBuilder &Log::Debug(std::string msg, std::source_location loc)
+EntryBuilder &&Log::Debug(std::string msg, std::source_location loc)
 {
 	return EntryBuilderImpl(driver, loc)
 		.Name(logname)
@@ -35,7 +35,7 @@ EntryBuilder &Log::Debug(std::string msg, std::source_location loc)
 		.Message(msg);
 }
 
-EntryBuilder &Log::Info(std::string msg, std::source_location loc)
+EntryBuilder &&Log::Info(std::string msg, std::source_location loc)
 {
 	return EntryBuilderImpl(driver, loc)
 		.Name(logname)
@@ -43,7 +43,7 @@ EntryBuilder &Log::Info(std::string msg, std::source_location loc)
 		.Message(msg);
 }
 
-EntryBuilder &Log::Warn(std::string msg, std::source_location loc)
+EntryBuilder &&Log::Warn(std::string msg, std::source_location loc)
 {
 	return EntryBuilderImpl(driver, loc)
 		.Name(logname)
@@ -51,7 +51,7 @@ EntryBuilder &Log::Warn(std::string msg, std::source_location loc)
 		.Message(msg);
 }
 
-EntryBuilder &Log::Error(std::string msg, std::source_location loc)
+EntryBuilder &&Log::Error(std::string msg, std::source_location loc)
 {
 	return EntryBuilderImpl(driver, loc)
 		.Name(logname)
@@ -59,7 +59,7 @@ EntryBuilder &Log::Error(std::string msg, std::source_location loc)
 		.Message(msg);
 }
 
-EntryBuilder &Log::Fatal(std::string msg, std::source_location loc)
+EntryBuilder &&Log::Fatal(std::string msg, std::source_location loc)
 {
 	return EntryBuilderImpl(driver, loc)
 		.Name(logname)

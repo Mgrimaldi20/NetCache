@@ -36,13 +36,23 @@ public:
 
 	virtual ~EntryBuilderImpl();
 
-	EntryBuilder &Name(std::string_view name) override final;
-	EntryBuilder &Level(Entry::Level level) override final;
-	EntryBuilder &Message(std::string msg) override final;
+	EntryBuilder &Name(std::string_view name) & override final;
+	EntryBuilder &&Name(std::string_view name) && override final;
 
-	EntryBuilder &Timestamp(std::chrono::system_clock::time_point time) override final;
-	EntryBuilder &SourceLocation(std::source_location srcloc) override final;
-	EntryBuilder &Stacktrace(std::stacktrace trace) override final;
+	EntryBuilder &Level(Entry::Level level) & override final;
+	EntryBuilder &&Level(Entry::Level level) && override final;
+
+	EntryBuilder &Message(std::string msg) & override final;
+	EntryBuilder &&Message(std::string msg) && override final;
+
+	EntryBuilder &Timestamp(std::chrono::system_clock::time_point time) & override final;
+	EntryBuilder &&Timestamp(std::chrono::system_clock::time_point time) && override final;
+
+	EntryBuilder &SourceLocation(std::source_location srcloc) & override final;
+	EntryBuilder &&SourceLocation(std::source_location srcloc) && override final;
+
+	EntryBuilder &Stacktrace(std::stacktrace trace) & override final;
+	EntryBuilder &&Stacktrace(std::stacktrace trace) && override final;
 
 private:
 	std::string_view GetLevelStr(Entry::Level level) const override final;
