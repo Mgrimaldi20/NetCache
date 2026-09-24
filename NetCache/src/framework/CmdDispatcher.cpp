@@ -30,7 +30,7 @@ void CmdDispatcher::Register(std::vector<std::pair<std::string, CmdHandlerFn>> e
 		Register(std::move(key), std::move(val));
 }
 
-CmdDispatcher::CmdHandlerRetType CmdDispatcher::Dispatch(const Parser::ParsedCmd &parsedcmd)
+CmdDispatcher::CmdHandlerRetType CmdDispatcher::Dispatch(const Parser::ParsedCmd parsedcmd)
 {
 	auto handler = handlers.find(parsedcmd.cmdid);
 

@@ -15,7 +15,7 @@ public:
 	DelCmd(std::shared_ptr<KVStore> kvstore);
 	virtual ~DelCmd() = default;
 
-	CmdDispatcher::CmdHandlerRetType operator()(const Parser::PayloadType &pl) override final;
+	CmdDispatcher::CmdHandlerRetType operator()(const Parser::PayloadType pl) override final;
 };
 
 #endif

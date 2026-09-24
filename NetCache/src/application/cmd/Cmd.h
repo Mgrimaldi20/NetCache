@@ -22,7 +22,7 @@ public:
 
 	virtual ~Cmd() = default;
 
-	virtual CmdDispatcher::CmdHandlerRetType operator()(const Parser::PayloadType &pl) = 0;
+	virtual CmdDispatcher::CmdHandlerRetType operator()(const Parser::PayloadType pl) = 0;
 
 protected:
 	std::shared_ptr<KVStore> kvstore;

@@ -7,7 +7,7 @@ DelCmd::DelCmd(std::shared_ptr<KVStore> kvstore)
 {
 }
 
-CmdDispatcher::CmdHandlerRetType DelCmd::operator()(const Parser::PayloadType &pl)
+CmdDispatcher::CmdHandlerRetType DelCmd::operator()(const Parser::PayloadType pl)
 {
 	bool res = kvstore->Del(pl[0]);
 

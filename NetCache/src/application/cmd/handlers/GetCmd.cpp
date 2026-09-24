@@ -7,7 +7,7 @@ GetCmd::GetCmd(std::shared_ptr<KVStore> kvstore)
 {
 }
 
-CmdDispatcher::CmdHandlerRetType GetCmd::operator()(const Parser::PayloadType &pl)
+CmdDispatcher::CmdHandlerRetType GetCmd::operator()(const Parser::PayloadType pl)
 {
 	CmdDispatcher::CmdHandlerRetType ret = kvstore->Get(pl[0]);
 

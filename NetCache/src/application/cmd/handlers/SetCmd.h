@@ -16,7 +16,7 @@ public:
 	SetCmd(std::shared_ptr<KVStore> kvstore);
 	virtual ~SetCmd() = default;
 
-	CmdDispatcher::CmdHandlerRetType operator()(const Parser::PayloadType &pl) override final;
+	CmdDispatcher::CmdHandlerRetType operator()(const Parser::PayloadType pl) override final;
 };
 
 #endif

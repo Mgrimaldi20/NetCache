@@ -19,6 +19,8 @@
 
 namespace
 {
+	using ValidReturnType = std::optional<std::string>;
+
 	template<typename T>
 	concept ValidPair = requires (T t)
 	{
@@ -27,7 +29,11 @@ namespace
 	};
 
 	template<typename T>
-	concept ValidCallable = std::invocable<T, const Parser::PayloadType &>;
+	concept ValidCallable = std::invocable<T, const Parser::PayloadType> &&
+		requires(T &&t, const Parser::PayloadType pl)
+	{
+		{ std::invoke(std::forward<T>(t), pl) } -> std::convertible_to<ValidReturnType>;
+	};
 }
 
 /*
@@ -42,8 +48,8 @@ namespace
 class CmdDispatcher
 {
 public:
-	using CmdHandlerRetType = std::optional<std::string>;
-	using CmdHandlerFn = std::move_only_function<CmdHandlerRetType(const Parser::PayloadType &)>;
+	using CmdHandlerRetType = ValidReturnType;
+	using CmdHandlerFn = std::move_only_function<CmdHandlerRetType(const Parser::PayloadType)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
@@ -54,7 +60,7 @@ public:
 	template<ValidPair ...Pairs>
 	void Register(Pairs && ...pairs);
 
-	CmdHandlerRetType Dispatch(const Parser::ParsedCmd &parsedcmd);
+	CmdHandlerRetType Dispatch(const Parser::ParsedCmd parsedcmd);
 
 	template<ValidCallable CmdTy, typename ...Args>
 	static std::pair<std::string, CmdHandlerFn> MakeCmdPair(std::string cmdid, Args && ...args);
