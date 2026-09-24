@@ -20,11 +20,14 @@
 namespace
 {
 	template<typename T>
-	concept IsPair = requires (T t)
+	concept ValidPair = requires (T t)
 	{
 		t.first;
 		t.second;
 	};
+
+	template<typename T>
+	concept ValidCallable = std::invocable<T, const Parser::PayloadType &>;
 }
 
 /*
@@ -48,11 +51,13 @@ public:
 	CmdDispatcher &Register(std::string cmdid, CmdHandlerFn fn);
 	void Register(std::vector<std::pair<std::string, CmdHandlerFn>> elems);
 
-	template<typename ...Pairs>
-		requires(IsPair<Pairs> && ...)
+	template<ValidPair ...Pairs>
 	void Register(Pairs && ...pairs);
 
 	CmdHandlerRetType Dispatch(const Parser::ParsedCmd &parsedcmd);
+
+	template<ValidCallable CmdTy, typename ...Args>
+	static std::pair<std::string, CmdHandlerFn> MakeCmdPair(std::string cmdid, Args && ...args);
 
 private:
 	std::unordered_map<std::string, CmdHandlerFn, StringHash, std::equal_to<>> handlers;
@@ -60,11 +65,34 @@ private:
 	std::shared_ptr<Log> log;
 };
 
-template<typename ...Pairs>
-	requires(IsPair<Pairs> && ...)
+template<ValidPair ...Pairs>
 inline void CmdDispatcher::Register(Pairs && ...pairs)
 {
 	(Register(std::forward<Pairs>(pairs).first, std::forward<Pairs>(pairs).second), ...);
+}
+
+template<ValidCallable CmdTy, typename ...Args>
+inline std::pair<std::string, CmdDispatcher::CmdHandlerFn> CmdDispatcher::MakeCmdPair(
+	std::string cmdid,
+	Args && ...args
+)
+{
+	if constexpr (std::is_constructible_v<CmdDispatcher::CmdHandlerFn, CmdTy, Args...>)
+	{
+		auto bound = CmdDispatcher::CmdHandlerFn(std::forward<Args>(args)...);
+		return std::pair{ std::move(cmdid), std::move(bound) };
+	}
+
+	else
+	{
+		auto cmd = std::make_unique<CmdTy>(std::forward<Args>(args)...);
+		auto bound = [cmd = std::move(cmd)](const Parser::PayloadType &pl)
+		{
+			return (*cmd)(pl);
+		};
+
+		return std::pair{ std::move(cmdid), std::move(bound) };
+	}
 }
 
 #endif

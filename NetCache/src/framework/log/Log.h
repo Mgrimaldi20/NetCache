@@ -31,22 +31,17 @@ public:
 	struct FormatContext
 	{
 		template<typename T>
-			// intellisense hates this for some reason, all logging calls give false errors
-			//requires std::constructible_from<std::format_string<Args...>, T const &>
-		consteval FormatContext(
-			T const &fmt,
-			std::source_location loc = std::source_location::current()
-		) noexcept
+		consteval FormatContext(T const &fmt, std::source_location loc = std::source_location::current()) noexcept
 			: fmt(fmt),
 			loc(loc)
-		{}
+		{
+		}
 
 		std::format_string<Args...> fmt;
 		std::source_location loc;
 	};
 
 	Log(std::string logname, std::shared_ptr<Driver> driver = {});
-
 	~Log();
 
 	EntryBuilder &&Debug(std::string msg, std::source_location loc = std::source_location::current());

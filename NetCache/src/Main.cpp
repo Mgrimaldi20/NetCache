@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 
 		std::shared_ptr<Log> log = std::make_shared<Log>(
 			"NetCache",
-			std::make_shared<Driver>(
+			std::make_unique<Driver>(
 				"NetCacheMainLogDriver",
 				std::vector<std::shared_ptr<Sink>>
 				{
@@ -86,9 +86,9 @@ int main(int argc, char **argv)
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 
 		dispatcher->Register(
-			std::pair { "\x1", std::bind_front(&Cmd::operator(), std::make_shared<GetCmd>(kvstore)) },
-			std::pair { "\x2", std::bind_front(&Cmd::operator(), std::make_shared<SetCmd>(kvstore)) },
-			std::pair { "\x3", std::bind_front(&Cmd::operator(), std::make_shared<DelCmd>(kvstore)) }
+			CmdDispatcher::MakeCmdPair<GetCmd>("\x1", kvstore),
+			CmdDispatcher::MakeCmdPair<SetCmd>("\x2", kvstore),
+			CmdDispatcher::MakeCmdPair<DelCmd>("\x3", kvstore)
 		);
 
 		log->Info("Registered protocol commands in the CmdSystem");
