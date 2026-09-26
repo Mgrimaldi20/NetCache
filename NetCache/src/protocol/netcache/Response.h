@@ -21,6 +21,18 @@ namespace
 		&& ValidUIntType<std::underlying_type_t<T>>;
 }
 
+/*
+* Class: Response
+* Represents a command response, will get built as a complex object for whichever fields are required.
+* All data is and should be moved into the response payload fields to avoid copying.
+*
+*	ProtocolName: Sets the protocol name in the response
+*	Version: Sets the protocol version which this response is for
+*	RemainingLength: Sets the remaining length of the response payload not inclusive of this field
+*	Status: Set the responses status code to indicate the success or fail reason
+*	Payload: Set the actual response data to be consumed
+*	Build: Builds and moves out the fully built response bytes
+*/
 class Response
 {
 public:

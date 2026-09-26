@@ -1,8 +1,6 @@
 #include <chrono>
 #include <iterator>
 
-#include "entry/EntryBuilderImpl.h"
-
 #include "Log.h"
 
 Log::Log(std::string logname, std::shared_ptr<Driver> driver)
@@ -27,42 +25,42 @@ Log::~Log()
 	Info("Shutting down the Logger: {}", logname);
 }
 
-EntryBuilder &&Log::Debug(std::string msg, std::source_location loc)
+EntryBuilder Log::Debug(std::string msg, std::source_location loc)
 {
-	return EntryBuilderImpl(driver, loc)
+	return EntryBuilder(driver, loc)
 		.Name(logname)
 		.Level(Entry::Level::Debug)
-		.Message(msg);
+		.Message(std::move(msg));
 }
 
-EntryBuilder &&Log::Info(std::string msg, std::source_location loc)
+EntryBuilder Log::Info(std::string msg, std::source_location loc)
 {
-	return EntryBuilderImpl(driver, loc)
+	return EntryBuilder(driver, loc)
 		.Name(logname)
 		.Level(Entry::Level::Info)
-		.Message(msg);
+		.Message(std::move(msg));
 }
 
-EntryBuilder &&Log::Warn(std::string msg, std::source_location loc)
+EntryBuilder Log::Warn(std::string msg, std::source_location loc)
 {
-	return EntryBuilderImpl(driver, loc)
+	return EntryBuilder(driver, loc)
 		.Name(logname)
 		.Level(Entry::Level::Warn)
-		.Message(msg);
+		.Message(std::move(msg));
 }
 
-EntryBuilder &&Log::Error(std::string msg, std::source_location loc)
+EntryBuilder Log::Error(std::string msg, std::source_location loc)
 {
-	return EntryBuilderImpl(driver, loc)
+	return EntryBuilder(driver, loc)
 		.Name(logname)
 		.Level(Entry::Level::Error)
-		.Message(msg);
+		.Message(std::move(msg));
 }
 
-EntryBuilder &&Log::Fatal(std::string msg, std::source_location loc)
+EntryBuilder Log::Fatal(std::string msg, std::source_location loc)
 {
-	return EntryBuilderImpl(driver, loc)
+	return EntryBuilder(driver, loc)
 		.Name(logname)
 		.Level(Entry::Level::Fatal)
-		.Message(msg);
+		.Message(std::move(msg));
 }

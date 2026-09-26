@@ -8,7 +8,7 @@ StacktracePolicy::StacktracePolicy(Entry::Level level)
 
 bool StacktracePolicy::Transform(Entry &entry)
 {
-	if (entry.entrylevel != level)
+	if (entry.level != level)
 		return true;
 
 	entry.stacktrace = std::stacktrace::current();

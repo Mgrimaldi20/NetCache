@@ -8,7 +8,7 @@ SourceLocationPolicy::SourceLocationPolicy(Entry::Level level)
 
 bool SourceLocationPolicy::Transform(Entry &entry)
 {
-	if (entry.entrylevel == level)
+	if (entry.level == level)
 		return true;
 
 	entry.location.reset();

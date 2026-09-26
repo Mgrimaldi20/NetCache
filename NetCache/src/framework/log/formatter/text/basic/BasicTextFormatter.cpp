@@ -17,7 +17,7 @@ std::string BasicTextFormatter::Format(const Entry &entry) const
 		"{:%F %H:%M:%S %Z} [{}] [{}] {}{}{}\n",
 		localtime,
 		entry.logname,
-		entry.GetLevelStr(entry.entrylevel),
+		entry.GetLevelStr(entry.level),
 		entry.message,
 		GetSourceLocation(entry),
 		GetStacktrace(entry)
@@ -26,7 +26,7 @@ std::string BasicTextFormatter::Format(const Entry &entry) const
 
 std::string BasicTextFormatter::GetSourceLocation(const Entry &entry) const
 {
-	if (!entry.location.has_value() || entry.entrylevel != Entry::Level::Debug)
+	if (!entry.location.has_value() || entry.level != Entry::Level::Debug)
 		return "";
 
 	std::source_location srcloc = entry.location.value();

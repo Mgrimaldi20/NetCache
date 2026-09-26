@@ -1,11 +1,14 @@
 #ifndef __NETCACHE_FRAMEWORK_LOG_ENTRY_ENTRYBUILDER_H__
 #define __NETCACHE_FRAMEWORK_LOG_ENTRY_ENTRYBUILDER_H__
 
+#include <memory>
+
+#include "framework/log/driver/Driver.h"
 #include "Entry.h"
 
 /*
 * Class: EntryBuilder
-* Interface for the entry builder, constructs the entry fluidly and should forward to a driver.
+* Constructs the entry fluidly and should forward to a driver.
 * 
 *	Name: Sets the name of the log message
 *	Level: Sets the log level of the entry
@@ -14,29 +17,43 @@
 *	SourceLocation: The source code location where the message originates
 *	Stacktrace: The stack trace of the log message
 */
-class EntryBuilder
+class EntryBuilder : private Entry
 {
 public:
-	EntryBuilder() = default;
-	virtual ~EntryBuilder() = default;
+	EntryBuilder(
+		std::weak_ptr<Driver> driver,
+		std::source_location srcloc = std::source_location::current(),
+		std::chrono::system_clock::time_point time = std::chrono::system_clock::now()
+	);
 
-	virtual EntryBuilder &Name(std::string_view name) & = 0;
-	virtual EntryBuilder &&Name(std::string_view name) && = 0;
+	EntryBuilder(const EntryBuilder &) = delete;
+	EntryBuilder &operator=(const EntryBuilder &) = delete;
 
-	virtual EntryBuilder &Level(Entry::Level level) & = 0;
-	virtual EntryBuilder &&Level(Entry::Level level) && = 0;
+	EntryBuilder(EntryBuilder &&other) noexcept;
+	EntryBuilder &operator=(EntryBuilder &&other) noexcept = default;
 
-	virtual EntryBuilder &Message(std::string msg) & = 0;
-	virtual EntryBuilder &&Message(std::string msg) && = 0;
+	~EntryBuilder();
 
-	virtual EntryBuilder &Timestamp(std::chrono::system_clock::time_point time) & = 0;
-	virtual EntryBuilder &&Timestamp(std::chrono::system_clock::time_point time) && = 0;
+	EntryBuilder &Name(std::string_view name) &;
+	EntryBuilder &&Name(std::string_view name) &&;
 
-	virtual EntryBuilder &SourceLocation(std::source_location srcloc) & = 0;
-	virtual EntryBuilder &&SourceLocation(std::source_location srcloc) && = 0;
+	EntryBuilder &Level(Entry::Level entrylevel) &;
+	EntryBuilder &&Level(Entry::Level entrylevel) &&;
 
-	virtual EntryBuilder &Stacktrace(std::stacktrace trace) & = 0;
-	virtual EntryBuilder &&Stacktrace(std::stacktrace trace) && = 0;
+	EntryBuilder &Message(std::string msg) &;
+	EntryBuilder &&Message(std::string msg) &&;
+
+	EntryBuilder &Timestamp(std::chrono::system_clock::time_point time) &;
+	EntryBuilder &&Timestamp(std::chrono::system_clock::time_point time) &&;
+
+	EntryBuilder &SourceLocation(std::source_location srcloc) &;
+	EntryBuilder &&SourceLocation(std::source_location srcloc) &&;
+
+	EntryBuilder &Stacktrace(std::stacktrace trace) &;
+	EntryBuilder &&Stacktrace(std::stacktrace trace) &&;
+
+private:
+	std::weak_ptr<Driver> driver;
 };
 
 #endif

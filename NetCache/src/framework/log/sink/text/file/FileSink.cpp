@@ -22,6 +22,9 @@ FileSink::FileSink(
 		std::filesystem::create_directories(fullpath.parent_path());
 
 	logfile.open(fullpath.string());
+
+	if (!logfile.is_open())
+		throw std::runtime_error("Failed to open log file");
 }
 
 void FileSink::Write(const Entry &entry)

@@ -86,7 +86,7 @@ inline std::pair<std::string, CmdDispatcher::CmdHandlerFn> CmdDispatcher::MakeCm
 	if constexpr (std::is_constructible_v<CmdDispatcher::CmdHandlerFn, CmdTy, Args...>)
 	{
 		auto bound = CmdDispatcher::CmdHandlerFn(std::forward<Args>(args)...);
-		return std::pair{ std::move(cmdid), std::move(bound) };
+		return std::pair { std::move(cmdid), std::move(bound) };
 	}
 
 	else
@@ -97,7 +97,7 @@ inline std::pair<std::string, CmdDispatcher::CmdHandlerFn> CmdDispatcher::MakeCm
 			return (*cmd)(pl);
 		};
 
-		return std::pair{ std::move(cmdid), std::move(bound) };
+		return std::pair { std::move(cmdid), std::move(bound) };
 	}
 }
 

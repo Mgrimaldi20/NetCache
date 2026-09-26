@@ -14,12 +14,13 @@ CmdDispatcher::~CmdDispatcher()
 
 CmdDispatcher &CmdDispatcher::Register(std::string cmdid, CmdHandlerFn fn)
 {
-	auto [it, inserted] = handlers.emplace(std::move(cmdid), std::move(fn));
+	auto [it, inserted] = handlers.insert_or_assign(std::move(cmdid), std::move(fn));
 
-	if (!inserted)
-		log->Warn("Failed to register CmdHandler function");
+	if (inserted)
+		log->Info("Registered command with ID: {}", std::span<const char>(it->first));
 
-	log->Info("Registered command with ID: {}", std::span<const char>(it->first));
+	else
+		log->Info("Assigned new command to ID: {}", std::span<const char>(it->first));
 
 	return *this;
 }

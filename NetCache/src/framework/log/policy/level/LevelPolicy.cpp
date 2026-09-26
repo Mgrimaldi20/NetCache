@@ -10,7 +10,7 @@ LevelPolicy::LevelPolicy(Entry::Level level)
 
 bool LevelPolicy::Transform(Entry &entry)
 {
-	if (std::to_underlying(entry.entrylevel) >= std::to_underlying(level))
+	if (std::to_underlying(entry.level) >= std::to_underlying(level))
 		return true;
 
 	return false;

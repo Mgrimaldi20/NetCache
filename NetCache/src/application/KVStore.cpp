@@ -5,12 +5,12 @@ KVStore::KVStore(std::shared_ptr<Log> log)
 	mtx(),
 	log(log)
 {
-	log->Info("Creating KVStore");
+	log->Info("Creating KV Store");
 }
 
 KVStore::~KVStore()
 {
-	log->Info("Destroying KVStore");
+	log->Info("Destroying KV Store");
 }
 
 std::optional<std::string> KVStore::Get(std::string_view key)
@@ -21,7 +21,7 @@ std::optional<std::string> KVStore::Get(std::string_view key)
 
 	if (it == kvstore.end())
 	{
-		log->Warn("Key: \"{}\" not found in KVStore", key);
+		log->Warn("Key: \"{}\" not found in KV Store", key);
 		return std::nullopt;
 	}
 
