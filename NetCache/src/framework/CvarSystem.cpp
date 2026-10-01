@@ -8,92 +8,123 @@ CvarSystem::CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log)
 	fullpath(std::move(fullpath)),
 	log(log)
 {
-	Deserialize();
+	if (this->fullpath.empty())
+		throw std::runtime_error("The full path provided to the Cvar System is empty");
 
-	log->Info("Cvar System started: {}", this->fullpath.c_str());
-}
+	if (!this->fullpath.has_filename())
+		throw std::runtime_error("The full path provided to the Cvar System has no file name");
 
-CvarSystem::~CvarSystem()
-{
-	log->Info("Shutting down the Cvar System: {}", fullpath.c_str());
+	if (this->fullpath.has_parent_path())
+		std::filesystem::create_directories(this->fullpath.parent_path());
 
-	Serialize();
-}
+	const auto &filename = this->fullpath.string();
 
-CvarSystem &CvarSystem::Register(std::string name, CvarType defvalue, std::string description)
-{
-	auto [it, inserted] = cvars.insert_or_assign(
-		std::move(name),
-		CvarSystem::Cvar
-		{
-			.value = std::move(defvalue),
-			.description = std::move(description)
-		}
-	);
-
-	if (inserted)
-		log->Info("Registered Cvar: {} with value: {}", it->first, it->second.value);
-
-	else
-		log->Info("Assigned Cvar: {} with new value: {}", it->first, it->second.value);
-
-	return *this;
-}
-
-void CvarSystem::Deserialize()
-{
-	if (fullpath.empty())
-		throw std::runtime_error("The full path provided to the Logger is empty");
-
-	if (!fullpath.has_filename())
-		throw std::runtime_error("The full path provided to the Logger has no file name");
-
-	if (fullpath.has_parent_path())
-		std::filesystem::create_directories(fullpath.parent_path());
-
-	auto filename = fullpath.c_str();
+	if (!std::filesystem::exists(filename))
+		std::ofstream cf(filename);
 
 	std::ifstream cfgfile(filename);
 
 	if (!cfgfile.is_open())
-	{
-		log->Error("Failed to open config file for reading: {}", filename);
 		throw std::runtime_error(std::format("Failed to open config file for Deserialization: {}", filename));
-	}
 
-	std::string line;
-	while (std::getline(cfgfile, line))
-	{
-	}
+	Deserialize(cfgfile);
+
+	log->Info("Cvar System started: {}", filename);
 }
 
-void CvarSystem::Serialize() const
+CvarSystem::~CvarSystem()
 {
-	auto filename = fullpath.c_str();
+	const auto &filename = fullpath.string();
+
+	log->Info("Shutting down the Cvar System: {}", filename);
 
 	std::ofstream cfgfile(filename);
 
 	if (!cfgfile.is_open())
 	{
-		log->Error("Failed to open config file for writing: {}", filename);
+		log->Error("Cvars discarded, failed to open config file for writing: {}", filename);
 		return;
 	}
 
+	Serialize(cfgfile);
+	log->Info("Wrote all archived Cvars to config file: {}", filename);
+
+	std::stringstream sstrm;
+	Serialize(sstrm);
+
+	log->Debug("Dumping Cvars for debugging:\n{}", sstrm.str());
+}
+
+CvarSystem &CvarSystem::Register(std::string name, Cvar defvalue)
+{
+	auto [it, inserted] = cvars.try_emplace(std::move(name), std::move(defvalue));
+
+	const auto &varname = it->first;
+	const auto &value = it->second;
+
+	const auto PrintVal = [](const auto &val)
+	{
+		return std::visit(
+			Overloaded
+			{
+				[](const bool b)
+				{
+					std::string_view str;
+					b ? str = "true" : str = "false";
+					return std::string(str);
+				},
+				[](const auto scalar)
+				{
+					std::stringstream sstrm;
+					sstrm << scalar;
+					return sstrm.str();
+				},
+				[](const std::string &s) { return s; }
+			},
+			val
+		);
+	};
+
+	if (inserted)
+		log->Info("Registered Cvar: {} with value: {}", varname, PrintVal(value));
+
+	else
+		log->Info("Cvar: {} already existed with value: {}", varname, PrintVal(value));
+
+	return *this;
+}
+
+void CvarSystem::Register(std::vector<std::pair<std::string, Cvar>> elems)
+{
+	for (auto &[key, val] : elems)
+		Register(std::move(key), std::move(val));
+}
+
+void CvarSystem::Deserialize(std::istream &istrm)
+{
+	std::string line;
+	while (std::getline(istrm, line))
+	{
+	}
+}
+
+void CvarSystem::Serialize(std::ostream &ostrm) const
+{
 	for (const auto &[name, cvar] : cvars)
 	{
-		cfgfile << name;
+		ostrm << name << "=";
 
 		std::visit(
 			Overloaded
 			{
-				[&](bool b) { cfgfile << " b " << b; },
-				[&](int i) { cfgfile << " i " << i; },
-				[&](float f) { cfgfile << " f " << f; },
-				[&](const std::string &s) { cfgfile << " a " << s; }
+				[&](bool b) { ostrm << (b ? "true" : "false"); },
+				[&](int i) { ostrm << i; },
+				[&](float f) { ostrm << f; },
+				[&](const std::string &s) { ostrm << "\"" << s << "\""; }
 			},
-			cvar.value
+			cvar
 		);
 
-		cfgfile << std::endl;
+		ostrm << std::endl;
 	}
 }

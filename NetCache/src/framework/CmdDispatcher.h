@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <optional>
 #include <string_view>
+#include <algorithm>
 
 #include "network/Client.h"
 
@@ -33,6 +34,22 @@ namespace
 		requires(T &&t, const Parser::PayloadType pl)
 	{
 		{ std::invoke(std::forward<T>(t), pl) } -> std::convertible_to<ValidReturnType>;
+	};
+
+	template<std::size_t N>
+	struct CTS
+	{
+		constexpr CTS(const char(&str)[N])
+		{
+			std::copy_n(str, N, data);
+		}
+
+		constexpr operator std::string_view() const
+		{
+			return { data, N - 1 };
+		}
+
+		char data[N]{};
 	};
 }
 
@@ -62,8 +79,8 @@ public:
 
 	CmdHandlerRetType Dispatch(const Parser::ParsedCmd parsedcmd);
 
-	template<ValidCallable CmdTy, typename ...Args>
-	static std::pair<std::string, CmdHandlerFn> MakeCmdPair(std::string cmdid, Args && ...args);
+	template<CTS CmdId, ValidCallable CmdTy, typename ...Args>
+	static std::pair<std::string, CmdHandlerFn> MakeCmdPair(Args && ...args);
 
 private:
 	std::unordered_map<std::string, CmdHandlerFn, StringHash, std::equal_to<>> handlers;
@@ -77,16 +94,13 @@ inline void CmdDispatcher::Register(Pairs && ...pairs)
 	(Register(std::forward<Pairs>(pairs).first, std::forward<Pairs>(pairs).second), ...);
 }
 
-template<ValidCallable CmdTy, typename ...Args>
-inline std::pair<std::string, CmdDispatcher::CmdHandlerFn> CmdDispatcher::MakeCmdPair(
-	std::string cmdid,
-	Args && ...args
-)
+template<CTS CmdId, ValidCallable CmdTy, typename ...Args>
+inline std::pair<std::string, CmdDispatcher::CmdHandlerFn> CmdDispatcher::MakeCmdPair(Args && ...args)
 {
 	if constexpr (std::is_constructible_v<CmdDispatcher::CmdHandlerFn, CmdTy, Args...>)
 	{
 		auto bound = CmdDispatcher::CmdHandlerFn(std::forward<Args>(args)...);
-		return std::pair { std::move(cmdid), std::move(bound) };
+		return std::pair{ std::move(std::string(CmdId)), std::move(bound) };
 	}
 
 	else
@@ -97,7 +111,7 @@ inline std::pair<std::string, CmdDispatcher::CmdHandlerFn> CmdDispatcher::MakeCm
 			return (*cmd)(pl);
 		};
 
-		return std::pair { std::move(cmdid), std::move(bound) };
+		return std::pair{ std::move(std::string(CmdId)), std::move(bound) };
 	}
 }
 

@@ -16,11 +16,13 @@ CmdDispatcher &CmdDispatcher::Register(std::string cmdid, CmdHandlerFn fn)
 {
 	auto [it, inserted] = handlers.insert_or_assign(std::move(cmdid), std::move(fn));
 
+	const auto id = std::span<const char>(it->first);
+
 	if (inserted)
-		log->Info("Registered command with ID: {}", std::span<const char>(it->first));
+		log->Info("Registered command with ID: {}", id);
 
 	else
-		log->Info("Assigned new command to ID: {}", std::span<const char>(it->first));
+		log->Info("Assigned new command to ID: {}", id);
 
 	return *this;
 }
@@ -37,7 +39,8 @@ CmdDispatcher::CmdHandlerRetType CmdDispatcher::Dispatch(const Parser::ParsedCmd
 
 	if (handler == handlers.end())
 	{
-		log->Warn("Command: \"{}\" does not exist... Cannot execute", std::span<const char>(parsedcmd.cmdid));
+		const auto id = std::span<const char>(parsedcmd.cmdid);
+		log->Warn("Command: \"{}\" does not exist... Cannot execute", id);
 		return std::nullopt;
 	}
 

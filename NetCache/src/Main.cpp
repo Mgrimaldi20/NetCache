@@ -12,7 +12,6 @@
 #include <condition_variable>
 #include <mutex>
 
-#include "framework/CmdDispatcher.h"
 #include "framework/log/Log.h"
 #include "framework/log/driver/Driver.h"
 #include "framework/log/entry/Entry.h"
@@ -22,6 +21,9 @@
 #include "framework/log/policy/level/LevelPolicy.h"
 #include "framework/log/policy/trace/StacktracePolicy.h"
 #include "framework/log/policy/trace/SourceLocationPolicy.h"
+
+#include "framework/CmdDispatcher.h"
+#include "framework/CvarSystem.h"
 
 #include "application/KVStore.h"
 #include "application/cmd/handlers/GetCmd.h"
@@ -82,13 +84,31 @@ int main(int argc, char **argv)
 			)
 		);
 
-		std::shared_ptr<KVStore> kvstore = std::make_shared<KVStore>(log);
+		std::shared_ptr<CvarSystem> cvarsystem = std::make_shared<CvarSystem>("config/config.cfg", log);
+
+		cvarsystem->Register(
+			{
+				{ "hi", "string val" },
+				{ "hello", 3.141f },
+				{ "whatsup", true },
+				{ "goodbye", 12345 }
+			}
+		);
+
+		cvarsystem->Register(
+			std::pair { "this", "should work too" },
+			std::pair { "now", "i am using the template" },
+			std::pair { "bleh", 8363 }
+		);
+
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 
+		std::shared_ptr<KVStore> kvstore = std::make_shared<KVStore>(log);
+
 		dispatcher->Register(
-			CmdDispatcher::MakeCmdPair<GetCmd>("\x1", kvstore),
-			CmdDispatcher::MakeCmdPair<SetCmd>("\x2", kvstore),
-			CmdDispatcher::MakeCmdPair<DelCmd>("\x3", kvstore)
+			CmdDispatcher::MakeCmdPair<"\x1", GetCmd>(kvstore),
+			CmdDispatcher::MakeCmdPair<"\x2", SetCmd>(kvstore),
+			CmdDispatcher::MakeCmdPair<"\x3", DelCmd>(kvstore)
 		);
 
 		log->Info("Registered protocol commands in the CmdSystem");
