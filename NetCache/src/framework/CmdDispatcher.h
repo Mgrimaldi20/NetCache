@@ -10,6 +10,8 @@
 #include <optional>
 #include <string_view>
 #include <algorithm>
+#include <type_traits>
+#include <concepts>
 
 #include "network/Client.h"
 

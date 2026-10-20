@@ -86,21 +86,6 @@ int main(int argc, char **argv)
 
 		std::shared_ptr<CvarSystem> cvarsystem = std::make_shared<CvarSystem>("config/config.cfg", log);
 
-		cvarsystem->Register(
-			{
-				{ "hi", "string val" },
-				{ "hello", 3.141f },
-				{ "whatsup", true },
-				{ "goodbye", 12345 }
-			}
-		);
-
-		cvarsystem->Register(
-			std::pair { "this", "should work too" },
-			std::pair { "now", "i am using the template" },
-			std::pair { "bleh", 8363 }
-		);
-
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 
 		std::shared_ptr<KVStore> kvstore = std::make_shared<KVStore>(log);

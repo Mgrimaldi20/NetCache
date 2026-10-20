@@ -29,6 +29,11 @@ CvarSystem::CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log)
 
 	Deserialize(cfgfile);
 
+	std::stringstream sstrm;
+	Deserialize(sstrm);
+
+	log->Debug("Dumping Cvars for debugging:\n{}", sstrm.str());
+
 	log->Info("Cvar System started: {}", filename);
 }
 
@@ -37,22 +42,6 @@ CvarSystem::~CvarSystem()
 	const auto &filename = fullpath.string();
 
 	log->Info("Shutting down the Cvar System: {}", filename);
-
-	std::ofstream cfgfile(filename);
-
-	if (!cfgfile.is_open())
-	{
-		log->Error("Cvars discarded, failed to open config file for writing: {}", filename);
-		return;
-	}
-
-	Serialize(cfgfile);
-	log->Info("Wrote all archived Cvars to config file: {}", filename);
-
-	std::stringstream sstrm;
-	Serialize(sstrm);
-
-	log->Debug("Dumping Cvars for debugging:\n{}", sstrm.str());
 }
 
 CvarSystem &CvarSystem::Register(std::string name, Cvar defvalue)
@@ -86,10 +75,10 @@ CvarSystem &CvarSystem::Register(std::string name, Cvar defvalue)
 	};
 
 	if (inserted)
-		log->Info("Registered Cvar: {} with value: {}", varname, PrintVal(value));
+		log->Info("Registered Cvar: [{}] with value: [{}]", varname, PrintVal(value));
 
 	else
-		log->Info("Cvar: {} already existed with value: {}", varname, PrintVal(value));
+		log->Info("Cvar: [{}] already existed with value: [{}]", varname, PrintVal(value));
 
 	return *this;
 }
@@ -100,11 +89,49 @@ void CvarSystem::Register(std::vector<std::pair<std::string, Cvar>> elems)
 		Register(std::move(key), std::move(val));
 }
 
+std::pair<std::string, CvarSystem::Cvar> CvarSystem::MakeCvarPair(std::string name, CvarSystem::Cvar value)
+{
+	return std::pair{ std::move(name), std::move(value) };
+}
+
 void CvarSystem::Deserialize(std::istream &istrm)
 {
+	Cvar value;
+
 	std::string line;
 	while (std::getline(istrm, line))
 	{
+		std::string_view lineview(line);
+
+		if (lineview.empty())
+			continue;
+
+		std::size_t nvspos = lineview.find_first_of('=');
+		if (nvspos == std::string_view::npos)
+			continue;
+
+		std::string_view name = lineview.substr(0, nvspos);
+		std::string_view valstr = lineview.substr(nvspos + 1);
+
+		if (valstr == "true" || valstr == "false")
+			value = (valstr == "true");
+
+		else if (float f; TryParse(valstr, f))
+			value = f;
+
+		else if (float i; TryParse(valstr, i))
+			value = i;
+
+		else if (valstr.size() >= 2 && valstr.front() == '"' && valstr.back() == '"')
+			value = std::string(valstr.substr(1, valstr.size() - 2));
+
+		else
+		{
+			log->Error("Failed to parse value: '{}', skipping", valstr);
+			continue;
+		}
+
+		Register(std::string(name), std::move(value));
 	}
 }
 
