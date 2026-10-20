@@ -29,11 +29,6 @@ CvarSystem::CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log)
 
 	Deserialize(cfgfile);
 
-	std::stringstream sstrm;
-	Serialize(sstrm);
-
-	log->Debug("Dumping Cvars for debugging:\n{}", sstrm.str());
-
 	log->Info("Cvar System started: {}", filename);
 }
 
