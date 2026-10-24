@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 			)
 		);
 
-		std::shared_ptr<CvarSystem> cvarsystem = std::make_shared<CvarSystem>("config/config.cfg", log);
+		std::shared_ptr<CvarSystem> cvarsystem = std::make_shared<CvarSystem>("config/config.cfg", log, true);
 
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 

@@ -20,7 +20,7 @@
 #include "StringHash.h"
 #include "log/Log.h"
 
-namespace
+namespace CmdConcepts
 {
 	using ValidReturnType = std::optional<std::string>;
 
@@ -67,7 +67,7 @@ namespace
 class CmdDispatcher
 {
 public:
-	using CmdHandlerRetType = ValidReturnType;
+	using CmdHandlerRetType = CmdConcepts::ValidReturnType;
 	using CmdHandlerFn = std::move_only_function<CmdHandlerRetType(const Parser::PayloadType)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
@@ -76,12 +76,12 @@ public:
 	CmdDispatcher &Register(std::string cmdid, CmdHandlerFn fn);
 	void Register(std::vector<std::pair<std::string, CmdHandlerFn>> elems);
 
-	template<ValidPair ...Pairs>
+	template<CmdConcepts::ValidPair ...Pairs>
 	void Register(Pairs && ...pairs);
 
 	CmdHandlerRetType Dispatch(const Parser::ParsedCmd parsedcmd);
 
-	template<CTS CmdId, ValidCallable CmdTy, typename ...Args>
+	template<CmdConcepts::CTS CmdId, CmdConcepts::ValidCallable CmdTy, typename ...Args>
 	static std::pair<std::string, CmdHandlerFn> MakeCmdPair(Args && ...args);
 
 private:
@@ -90,13 +90,13 @@ private:
 	std::shared_ptr<Log> log;
 };
 
-template<ValidPair ...Pairs>
+template<CmdConcepts::ValidPair ...Pairs>
 inline void CmdDispatcher::Register(Pairs && ...pairs)
 {
 	(Register(std::forward<Pairs>(pairs).first, std::forward<Pairs>(pairs).second), ...);
 }
 
-template<CTS CmdId, ValidCallable CmdTy, typename ...Args>
+template<CmdConcepts::CTS CmdId, CmdConcepts::ValidCallable CmdTy, typename ...Args>
 inline std::pair<std::string, CmdDispatcher::CmdHandlerFn> CmdDispatcher::MakeCmdPair(Args && ...args)
 {
 	if constexpr (std::is_constructible_v<CmdDispatcher::CmdHandlerFn, CmdTy, Args...>)

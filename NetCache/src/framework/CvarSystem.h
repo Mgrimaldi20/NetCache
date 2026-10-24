@@ -29,12 +29,16 @@ template<typename ...Ts> struct Overloaded : Ts... { using Ts::operator()...; };
 class CvarSystem
 {
 public:
-	using Cvar = std::variant<bool, int, float, std::string>;
+	using CvarValue = std::variant<bool, int, float, std::string>;
 
-	CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log);
+	struct Cvar
+	{
+		CvarValue value;
+	};
+
+	CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log, bool strictfilechecks = false);
 	~CvarSystem();
 
-private:
 	CvarSystem &Register(std::string name, Cvar defvalue);
 	void Register(std::vector<std::pair<std::string, Cvar>> elems);
 
@@ -43,6 +47,7 @@ private:
 
 	static std::pair<std::string, CvarSystem::Cvar> MakeCvarPair(std::string name, CvarSystem::Cvar value);
 
+private:
 	void Deserialize(std::istream &istrm);
 	void Serialize(std::ostream &ostrm) const;
 

@@ -7,7 +7,7 @@
 #include <type_traits>
 #include <bit>
 
-namespace
+namespace ResponseConcepts
 {
 	template<typename T>
 	concept ValidUIntType =
@@ -67,10 +67,10 @@ public:
 	std::string Build() &&;
 
 private:
-	template<ValidUIntType T>
+	template<ResponseConcepts::ValidUIntType T>
 	static void WriteUInt(std::string &buffer, T value);
 
-	template<ValidUIntUnderlyingType T>
+	template<ResponseConcepts::ValidUIntUnderlyingType T>
 	static void WriteUInt(std::string &buffer, T value);
 
 	std::string protoname;
@@ -80,7 +80,7 @@ private:
 	std::string payload;
 };
 
-template<ValidUIntType T>
+template<ResponseConcepts::ValidUIntType T>
 inline void Response::WriteUInt(std::string &buffer, T value)
 {
 	constexpr std::size_t VAL_SIZE = sizeof(value);
@@ -97,7 +97,7 @@ inline void Response::WriteUInt(std::string &buffer, T value)
 	});
 }
 
-template<ValidUIntUnderlyingType T>
+template<ResponseConcepts::ValidUIntUnderlyingType T>
 inline void Response::WriteUInt(std::string &buffer, T value)
 {
 	return WriteUInt(buffer, static_cast<std::underlying_type_t<T>>(value));

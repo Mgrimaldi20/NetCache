@@ -3,7 +3,7 @@
 
 #include "CvarSystem.h"
 
-CvarSystem::CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log)
+CvarSystem::CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log, bool strictfilechecks)
 	: cvars(),
 	fullpath(std::move(fullpath)),
 	log(log)
@@ -14,13 +14,16 @@ CvarSystem::CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log)
 	if (!this->fullpath.has_filename())
 		throw std::runtime_error("The full path provided to the Cvar System has no file name");
 
-	if (this->fullpath.has_parent_path())
-		std::filesystem::create_directories(this->fullpath.parent_path());
-
 	const auto &filename = this->fullpath.string();
 
-	if (!std::filesystem::exists(filename))
-		std::ofstream cf(filename);
+	if (!strictfilechecks)
+	{
+		if (this->fullpath.has_parent_path())
+			std::filesystem::create_directories(this->fullpath.parent_path());
+
+		if (!std::filesystem::exists(filename))
+			std::ofstream cf(filename);
+	}
 
 	std::ifstream cfgfile(filename);
 
@@ -70,10 +73,10 @@ CvarSystem &CvarSystem::Register(std::string name, Cvar defvalue)
 	};
 
 	if (inserted)
-		log->Info("Registered Cvar: [{}] with value: [{}]", varname, PrintVal(value));
+		log->Info("Registered Cvar: [{}] with value: [{}]", varname, PrintVal(value.value));
 
 	else
-		log->Info("Cvar: [{}] already existed with value: [{}]", varname, PrintVal(value));
+		log->Info("Cvar: [{}] already existed with value: [{}]", varname, PrintVal(value.value));
 
 	return *this;
 }
@@ -91,7 +94,7 @@ std::pair<std::string, CvarSystem::Cvar> CvarSystem::MakeCvarPair(std::string na
 
 void CvarSystem::Deserialize(std::istream &istrm)
 {
-	Cvar value;
+	CvarValue value;
 
 	std::string line;
 	while (std::getline(istrm, line))
@@ -126,7 +129,7 @@ void CvarSystem::Deserialize(std::istream &istrm)
 			continue;
 		}
 
-		Register(std::string(name), std::move(value));
+		Register(std::string(name), Cvar{ .value = std::move(value) });
 	}
 }
 
@@ -144,7 +147,7 @@ void CvarSystem::Serialize(std::ostream &ostrm) const
 				[&](float f) { ostrm << f; },
 				[&](const std::string &s) { ostrm << "\"" << s << "\""; }
 			},
-			cvar
+			cvar.value
 		);
 
 		ostrm << std::endl;
