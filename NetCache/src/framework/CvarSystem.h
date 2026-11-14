@@ -59,7 +59,7 @@ public:
 	template<CvarConcepts::ValidPair ...Pairs>
 	void Register(Pairs && ...pairs);
 
-	const std::optional<const CvarSystem::Cvar &const> Get(std::string_view name) const;
+	std::optional<std::reference_wrapper<const CvarSystem::Cvar>> Get(std::string_view name);
 
 	static std::pair<std::string, CvarSystem::Cvar> MakeCvarPair(std::string name, CvarSystem::Cvar value);
 

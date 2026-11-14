@@ -91,7 +91,7 @@ void CvarSystem::Register(std::vector<std::pair<std::string, Cvar>> elems)
 		Register(std::move(key), std::move(val));
 }
 
-const std::optional<const CvarSystem::Cvar &const> CvarSystem::Get(std::string_view name) const
+std::optional<std::reference_wrapper<const CvarSystem::Cvar>> CvarSystem::Get(std::string_view name)
 {
 	std::shared_lock lock(mtx);
 
