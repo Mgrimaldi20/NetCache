@@ -10,6 +10,9 @@
 #include <filesystem>
 #include <utility>
 #include <charconv>
+#include <string_view>
+#include <optional>
+#include <shared_mutex>
 
 #include "StringHash.h"
 #include "log/Log.h"
@@ -26,6 +29,17 @@ namespace CvarConcepts
 
 template<typename ...Ts> struct Overloaded : Ts... { using Ts::operator()...; };
 
+/*
+* Class: CvarSystem
+* Responsible for registering configuration variables sourced from the created resource .cfg file.
+* The file is loaded from the specified full file path and has two modes of operation.
+* The default with no strict file checks, a new file will be created and written to for runtime Cvar operation.
+* With strict file checks, the config file must exist first, and will never be overwritten, no runtime Cvars.
+*
+*	Register: Registers a Cvar with its name and associated value, or as multiple pairs
+*	Get: Grabs a const reference to a Cvar value from the Cvar system, it can only be retrieved, not changed
+*	MakeCvarPair: Creates a Cvar pair that can be called by register for convenicence
+*/
 class CvarSystem
 {
 public:
@@ -36,7 +50,7 @@ public:
 		CvarValue value;
 	};
 
-	CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log, bool strictfilechecks = false);
+	CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log, bool cvarmode = true);
 	~CvarSystem();
 
 	CvarSystem &Register(std::string name, Cvar defvalue);
@@ -44,6 +58,8 @@ public:
 
 	template<CvarConcepts::ValidPair ...Pairs>
 	void Register(Pairs && ...pairs);
+
+	const std::optional<const CvarSystem::Cvar &const> Get(std::string_view name) const;
 
 	static std::pair<std::string, CvarSystem::Cvar> MakeCvarPair(std::string name, CvarSystem::Cvar value);
 
@@ -56,8 +72,12 @@ private:
 
 	std::unordered_map<std::string, Cvar, StringHash, std::equal_to<>> cvars;
 
+	mutable std::shared_mutex mtx;
+
 	std::filesystem::path fullpath;
 	std::shared_ptr<Log> log;
+
+	bool cvarmode;
 };
 
 template<CvarConcepts::ValidPair ...Pairs>

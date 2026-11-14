@@ -3,10 +3,12 @@
 
 #include "CvarSystem.h"
 
-CvarSystem::CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log, bool strictfilechecks)
+CvarSystem::CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log, bool cvarmode)
 	: cvars(),
+	mtx(),
 	fullpath(std::move(fullpath)),
-	log(log)
+	log(log),
+	cvarmode(cvarmode)
 {
 	if (this->fullpath.empty())
 		throw std::runtime_error("The full path provided to the Cvar System is empty");
@@ -16,7 +18,7 @@ CvarSystem::CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log,
 
 	const auto &filename = this->fullpath.string();
 
-	if (!strictfilechecks)
+	if (cvarmode)
 	{
 		if (this->fullpath.has_parent_path())
 			std::filesystem::create_directories(this->fullpath.parent_path());
@@ -44,6 +46,8 @@ CvarSystem::~CvarSystem()
 
 CvarSystem &CvarSystem::Register(std::string name, Cvar defvalue)
 {
+	std::unique_lock lock(mtx);
+
 	auto [it, inserted] = cvars.try_emplace(std::move(name), std::move(defvalue));
 
 	const auto &varname = it->first;
@@ -87,6 +91,21 @@ void CvarSystem::Register(std::vector<std::pair<std::string, Cvar>> elems)
 		Register(std::move(key), std::move(val));
 }
 
+const std::optional<const CvarSystem::Cvar &const> CvarSystem::Get(std::string_view name) const
+{
+	std::shared_lock lock(mtx);
+
+	auto it = cvars.find(name);
+
+	if (it == cvars.end())
+	{
+		log->Warn("Key: \"{}\" not found in Cvar System", name);
+		return std::nullopt;
+	}
+
+	return it->second;
+}
+
 std::pair<std::string, CvarSystem::Cvar> CvarSystem::MakeCvarPair(std::string name, CvarSystem::Cvar value)
 {
 	return std::pair{ std::move(name), std::move(value) };
@@ -101,7 +120,7 @@ void CvarSystem::Deserialize(std::istream &istrm)
 	{
 		std::string_view lineview(line);
 
-		if (lineview.empty())
+		if (lineview.empty() || lineview.front() == '#')
 			continue;
 
 		std::size_t nvspos = lineview.find_first_of('=');
