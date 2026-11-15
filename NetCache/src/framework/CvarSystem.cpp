@@ -40,8 +40,32 @@ CvarSystem::CvarSystem(std::filesystem::path fullpath, std::shared_ptr<Log> log,
 CvarSystem::~CvarSystem()
 {
 	const auto &filename = fullpath.string();
-
 	log->Info("Shutting down the Cvar System: {}", filename);
+
+	if (cvarmode)
+	{
+		log->Info("Wiring Cvars back to config file: {}", filename);
+
+		std::ofstream cfgfile(filename, std::ios::in | std::ios::out);			
+
+		if (!cfgfile.is_open())
+			log->Error("Config file could not be opened, Cvar changes will not be written back to the config file");
+
+		else
+		{
+			try
+			{
+				std::filesystem::resize_file(filename, 0);
+			}
+
+			catch (const std::filesystem::filesystem_error &e)
+			{
+				log->Error("Error clearing file: {}", e.what());
+			}
+
+			Serialize(cfgfile);
+		}
+	}
 }
 
 CvarSystem &CvarSystem::Register(std::string name, Cvar defvalue)
