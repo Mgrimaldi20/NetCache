@@ -1,5 +1,7 @@
 #include <fstream>
 #include <sstream>
+#include <system_error>
+#include <print>
 
 #include "CvarSystem.h"
 
@@ -42,29 +44,40 @@ CvarSystem::~CvarSystem()
 	const auto &filename = fullpath.string();
 	log->Info("Shutting down the Cvar System: {}", filename);
 
-	if (cvarmode)
+	if (!cvarmode)
+		return;
+
+	log->Info("Wiring Cvars back to config file: {}", filename);
+
+	std::filesystem::path tmpfile = fullpath;
+	tmpfile.replace_extension(fullpath.extension().string() + ".tmp");
+
+	try
 	{
-		log->Info("Wiring Cvars back to config file: {}", filename);
-
-		std::ofstream cfgfile(filename, std::ios::in | std::ios::out);			
-
-		if (!cfgfile.is_open())
-			log->Error("Config file could not be opened, Cvar changes will not be written back to the config file");
-
-		else
 		{
-			try
-			{
-				std::filesystem::resize_file(filename, 0);
-			}
+			std::ofstream cfgfile(tmpfile);
 
-			catch (const std::filesystem::filesystem_error &e)
+			if (!cfgfile.is_open())
 			{
-				log->Error("Error clearing file: {}", e.what());
+				log->Error("Config file could not be opened, Cvar changes will not be written back to config file");
+				return;
 			}
 
 			Serialize(cfgfile);
 		}
+
+		std::filesystem::rename(tmpfile, fullpath);
+	}
+
+	catch (const std::exception &e)
+	{
+		log->Error("Error safely writing to config file {} :: {}", filename, e.what());
+
+		std::error_code ec;
+		std::filesystem::remove(tmpfile, ec);
+
+		if (ec)
+			log->Error("Failed to remove temp file: {} :: {} : {}", tmpfile, ec.category(), ec.message());
 	}
 }
 
@@ -157,11 +170,11 @@ void CvarSystem::Deserialize(std::istream &istrm)
 		if (valstr == "true" || valstr == "false")
 			value = (valstr == "true");
 
+		else if (int i; TryParse(valstr, i))
+			value = i;
+
 		else if (float f; TryParse(valstr, f))
 			value = f;
-
-		else if (float i; TryParse(valstr, i))
-			value = i;
 
 		else if (valstr.size() >= 2 && valstr.front() == '"' && valstr.back() == '"')
 			value = std::string(valstr.substr(1, valstr.size() - 2));
@@ -180,19 +193,19 @@ void CvarSystem::Serialize(std::ostream &ostrm) const
 {
 	for (const auto &[name, cvar] : cvars)
 	{
-		ostrm << name << "=";
+		std::print(ostrm, "{}=", name);
 
 		std::visit(
 			Overloaded
 			{
 				[&](bool b) { ostrm << (b ? "true" : "false"); },
-				[&](int i) { ostrm << i; },
-				[&](float f) { ostrm << f; },
-				[&](const std::string &s) { ostrm << "\"" << s << "\""; }
+				[&](int i) { std::print(ostrm, "{}", i); },
+				[&](float f) { std::print(ostrm, "{}", f); },
+				[&](const std::string &s) { std::print("\"{}\"", s); }
 			},
 			cvar.value
 		);
 
-		ostrm << std::endl;
+		std::print(ostrm, "\n");
 	}
 }
