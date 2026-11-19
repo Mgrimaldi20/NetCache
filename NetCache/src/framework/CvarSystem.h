@@ -59,16 +59,13 @@ public:
 	template<CvarConcepts::ValidPair ...Pairs>
 	void Register(Pairs && ...pairs);
 
-	std::optional<std::reference_wrapper<const CvarSystem::Cvar>> Get(std::string_view name);
+	std::optional<std::reference_wrapper<const CvarSystem::Cvar>> Fetch(std::string_view name);
 
 	static std::pair<std::string, CvarSystem::Cvar> MakeCvarPair(std::string name, CvarSystem::Cvar value);
 
 private:
 	void Deserialize(std::istream &istrm);
 	void Serialize(std::ostream &ostrm) const;
-
-	template<typename T>
-	static bool TryParse(std::string_view sv, T &out);
 
 	std::unordered_map<std::string, Cvar, StringHash, std::equal_to<>> cvars;
 
@@ -84,13 +81,6 @@ template<CvarConcepts::ValidPair ...Pairs>
 inline void CvarSystem::Register(Pairs && ...pairs)
 {
 	(Register(std::forward<Pairs>(pairs).first, std::forward<Pairs>(pairs).second), ...);
-}
-
-template<typename T>
-inline bool CvarSystem::TryParse(std::string_view sv, T &out)
-{
-	auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), out);
-	return ec == std::errc() && ptr == sv.data() + sv.size();
 }
 
 #endif

@@ -1,5 +1,4 @@
 #include <fstream>
-#include <sstream>
 #include <system_error>
 #include <print>
 
@@ -52,6 +51,22 @@ CvarSystem::~CvarSystem()
 	std::filesystem::path tmpfile = fullpath;
 	tmpfile.replace_extension(fullpath.extension().string() + ".tmp");
 
+	std::error_code ec;
+
+	auto RemoveFile = [&](const std::filesystem::path &fp, std::error_code &ec)
+	{
+		std::filesystem::remove(fp, ec);
+		if (ec)
+		{
+			log->Error(
+				"Failed to remove leftover temp file: {} :: {} : {}",
+				tmpfile.string(),
+				ec.category().name(),
+				ec.message()
+			);
+		}
+	};
+
 	try
 	{
 		{
@@ -60,6 +75,7 @@ CvarSystem::~CvarSystem()
 			if (!cfgfile.is_open())
 			{
 				log->Error("Config file could not be opened, Cvar changes will not be written back to config file");
+				RemoveFile(tmpfile, ec);
 				return;
 			}
 
@@ -72,12 +88,7 @@ CvarSystem::~CvarSystem()
 	catch (const std::exception &e)
 	{
 		log->Error("Error safely writing to config file {} :: {}", filename, e.what());
-
-		std::error_code ec;
-		std::filesystem::remove(tmpfile, ec);
-
-		if (ec)
-			log->Error("Failed to remove temp file: {} :: {} : {}", tmpfile, ec.category(), ec.message());
+		RemoveFile(tmpfile, ec);
 	}
 }
 
@@ -90,34 +101,30 @@ CvarSystem &CvarSystem::Register(std::string name, Cvar defvalue)
 	const auto &varname = it->first;
 	const auto &value = it->second;
 
-	const auto PrintVal = [](const auto &val)
+	const auto FormatVal = [](const CvarSystem::Cvar &val)
 	{
 		return std::visit(
 			Overloaded
 			{
 				[](const bool b)
 				{
-					std::string_view str;
-					b ? str = "true" : str = "false";
-					return std::string(str);
+					return std::string(b ? "true" : "false");
 				},
 				[](const auto scalar)
 				{
-					std::stringstream sstrm;
-					sstrm << scalar;
-					return sstrm.str();
+					std::to_string(scalar);
 				},
 				[](const std::string &s) { return s; }
 			},
-			val
+			val.value
 		);
 	};
 
 	if (inserted)
-		log->Info("Registered Cvar: [{}] with value: [{}]", varname, PrintVal(value.value));
+		log->Info("Registered Cvar: [{}] with value: [{}]", varname, FormatVal(value));
 
 	else
-		log->Info("Cvar: [{}] already existed with value: [{}]", varname, PrintVal(value.value));
+		log->Info("Cvar: [{}] already existed with value: [{}]", varname, FormatVal(value));
 
 	return *this;
 }
@@ -128,7 +135,7 @@ void CvarSystem::Register(std::vector<std::pair<std::string, Cvar>> elems)
 		Register(std::move(key), std::move(val));
 }
 
-std::optional<std::reference_wrapper<const CvarSystem::Cvar>> CvarSystem::Get(std::string_view name)
+std::optional<std::reference_wrapper<const CvarSystem::Cvar>> CvarSystem::Fetch(std::string_view name)
 {
 	std::shared_lock lock(mtx);
 
@@ -150,7 +157,11 @@ std::pair<std::string, CvarSystem::Cvar> CvarSystem::MakeCvarPair(std::string na
 
 void CvarSystem::Deserialize(std::istream &istrm)
 {
-	CvarValue value;
+	auto TryParse = []<typename T>(std::string_view sv, T &out)
+	{
+		auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), out);
+		return ec == std::errc() && ptr == sv.data() + sv.size();
+	};
 
 	std::string line;
 	while (std::getline(istrm, line))
@@ -166,6 +177,8 @@ void CvarSystem::Deserialize(std::istream &istrm)
 
 		std::string_view name = lineview.substr(0, nvspos);
 		std::string_view valstr = lineview.substr(nvspos + 1);
+
+		CvarValue value;
 
 		if (valstr == "true" || valstr == "false")
 			value = (valstr == "true");
@@ -198,10 +211,10 @@ void CvarSystem::Serialize(std::ostream &ostrm) const
 		std::visit(
 			Overloaded
 			{
-				[&](bool b) { ostrm << (b ? "true" : "false"); },
+				[&](bool b) { print(ostrm, "{}", (b ? "true" : "false")); },
 				[&](int i) { std::print(ostrm, "{}", i); },
 				[&](float f) { std::print(ostrm, "{}", f); },
-				[&](const std::string &s) { std::print("\"{}\"", s); }
+				[&](const std::string &s) { std::print(ostrm, "\"{}\"", s); }
 			},
 			cvar.value
 		);
